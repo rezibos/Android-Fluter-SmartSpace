@@ -22,6 +22,7 @@ class ControlScreen extends StatelessWidget {
     required this.onNotificationsTap,
     required this.onProfileTap,
     required this.onRetry,
+    required this.onViewSensors,
   });
 
   final List<RoomLight> rooms;
@@ -38,6 +39,7 @@ class ControlScreen extends StatelessWidget {
   final VoidCallback onNotificationsTap;
   final VoidCallback onProfileTap;
   final VoidCallback onRetry;
+  final VoidCallback onViewSensors;
 
   String get _greeting {
     final hour = DateTime.now().hour;
@@ -67,6 +69,12 @@ class ControlScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   AlarmBanner(gas: snapshot!.gas, threshold: gasThreshold),
                 ],
+                const SizedBox(height: 24),
+                _homeCondition(context),
+                const SizedBox(height: 16),
+                _usageSummary(context, active),
+                const SizedBox(height: 16),
+                _quickActions(context),
                 const SizedBox(height: 24),
                 _roomChips(context),
                 const SizedBox(height: 28),
@@ -396,6 +404,254 @@ class ControlScreen extends StatelessWidget {
                 ),
               )
               .toList(),
+    ),
+  );
+
+  Widget _homeCondition(BuildContext context) {
+    final danger = snapshot?.isGasDanger(gasThreshold) ?? false;
+    final items = [
+      (
+        'Suhu',
+        snapshot == null ? '—' : '${snapshot!.temperature.toStringAsFixed(1)}°',
+        Icons.thermostat_outlined,
+        context.space.active,
+      ),
+      (
+        'Udara',
+        snapshot == null ? '—' : '${snapshot!.humidity.round()}%',
+        Icons.water_outlined,
+        context.space.accent,
+      ),
+      (
+        'Gas',
+        snapshot == null
+            ? '—'
+            : danger
+            ? 'Bahaya'
+            : 'Aman',
+        Icons.warning_amber_rounded,
+        danger ? SpacePalette.danger : SpacePalette.safe,
+      ),
+      (
+        'Cuaca',
+        snapshot == null
+            ? '—'
+            : snapshot!.isRaining
+            ? 'Hujan'
+            : 'Cerah',
+        snapshot?.isRaining == true
+            ? Icons.water_drop_outlined
+            : Icons.wb_sunny_outlined,
+        snapshot?.isRaining == true ? SpacePalette.info : context.space.accent,
+      ),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Text(
+              'Kondisi Rumah',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
+            const Spacer(),
+            TextButton(
+              onPressed: onViewSensors,
+              child: const Text('Lihat semua'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 105,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: items.length,
+            separatorBuilder: (_, _) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              final item = items[index];
+              return Container(
+                width: 106,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: context.space.surface,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: context.space.border),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0C2B1820),
+                      blurRadius: 16,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(item.$3, size: 21, color: item.$4),
+                    const Spacer(),
+                    Text(
+                      item.$2,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      item.$1,
+                      style: TextStyle(
+                        color: context.space.inkMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _usageSummary(BuildContext context, int active) {
+    final lightWatt = rooms.fold<double>(
+      0,
+      (total, room) => total + (room.isOn ? 18 * room.brightness / 100 : 0),
+    );
+    final estimatedWatt = lightWatt + (relayOn ? 65 : 0) + 8;
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: context.space.muted,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: context.space.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: context.space.surface,
+              borderRadius: BorderRadius.circular(17),
+            ),
+            child: Icon(Icons.bolt_rounded, color: context.space.active),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Penggunaan saat ini',
+                  style: TextStyle(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '$active lampu aktif • Pompa ${relayOn ? 'aktif' : 'mati'}',
+                  style: TextStyle(color: context.space.inkMuted, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${estimatedWatt.toStringAsFixed(1)} W',
+                style: TextStyle(
+                  color: context.space.active,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              Text(
+                'Estimasi',
+                style: TextStyle(color: context.space.inkMuted, fontSize: 10),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _quickActions(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        'Aksi Cepat',
+        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+      ),
+      const SizedBox(height: 10),
+      Row(
+        children: [
+          Expanded(
+            child: _quickButton(
+              context,
+              icon: Icons.lightbulb_rounded,
+              label: 'Nyalakan',
+              onTap: connected ? () => onAllLights(true) : null,
+              filled: true,
+            ),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: _quickButton(
+              context,
+              icon: Icons.lightbulb_outline,
+              label: 'Matikan',
+              onTap: connected ? () => onAllLights(false) : null,
+            ),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: _quickButton(
+              context,
+              icon: Icons.monitor_heart_outlined,
+              label: 'Sensor',
+              onTap: onViewSensors,
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+
+  Widget _quickButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback? onTap,
+    bool filled = false,
+  }) => SizedBox(
+    height: 58,
+    child: OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        foregroundColor: filled ? context.space.onActive : context.space.active,
+        backgroundColor: filled ? context.space.active : context.space.surface,
+        side: BorderSide(
+          color: filled ? context.space.active : context.space.border,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 19),
+          const SizedBox(height: 3),
+          Text(
+            label,
+            maxLines: 1,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
     ),
   );
 

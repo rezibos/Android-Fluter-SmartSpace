@@ -9,6 +9,7 @@ import '../theme/space_theme.dart';
 import 'control_screen.dart';
 import 'detail_screens.dart';
 import 'electricity_screen.dart';
+import 'nekouse_screen.dart';
 import 'sensor_screen.dart';
 import 'settings_screen.dart';
 
@@ -279,12 +280,21 @@ class _HomeShellState extends State<HomeShell> {
           MaterialPageRoute(builder: (_) => const ProfileScreen()),
         ),
         onRetry: _poll,
+        onViewSensors: () => setState(() => _tab = 1),
       ),
       SensorScreen(
         snapshot: _snapshot,
         connected: _connected,
         gasThreshold: _gasThreshold,
         gasHistory: _gasHistory,
+      ),
+      NekouseScreen(
+        snapshot: _snapshot,
+        rooms: _rooms,
+        connected: _connected,
+        gasThreshold: _gasThreshold,
+        onOpenControl: () => setState(() => _tab = 0),
+        onOpenSensors: () => setState(() => _tab = 1),
       ),
       ElectricityScreen(rooms: _rooms, relayOn: _relayOn),
       SettingsScreen(
@@ -331,8 +341,9 @@ class _HomeShellState extends State<HomeShell> {
             children: [
               _navItem(0, Icons.tune_rounded, 'Kontrol'),
               _navItem(1, Icons.show_chart_rounded, 'Grafik'),
-              _navItem(2, Icons.bolt_outlined, 'Listrik'),
-              _navItem(3, Icons.settings_outlined, 'Profil'),
+              _nekouseNavItem(),
+              _navItem(3, Icons.bolt_outlined, 'Listrik'),
+              _navItem(4, Icons.settings_outlined, 'Profil'),
             ],
           ),
         ),
@@ -385,6 +396,42 @@ class _HomeShellState extends State<HomeShell> {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _nekouseNavItem() {
+    final selected = _tab == 2;
+    return Semantics(
+      label: 'Nekouse',
+      button: true,
+      selected: selected,
+      child: InkWell(
+        onTap: () => setState(() => _tab = 2),
+        customBorder: const CircleBorder(),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: 54,
+          height: 54,
+          transform: Matrix4.translationValues(0, selected ? -8 : -5, 0),
+          decoration: BoxDecoration(
+            color: context.space.active,
+            shape: BoxShape.circle,
+            border: Border.all(color: context.space.surface, width: 4),
+            boxShadow: [
+              BoxShadow(
+                color: context.space.active.withValues(alpha: .28),
+                blurRadius: 16,
+                offset: const Offset(0, 7),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.pets_rounded,
+            color: selected ? context.space.accent : context.space.onActive,
+            size: 25,
+          ),
         ),
       ),
     );

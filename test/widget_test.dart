@@ -51,7 +51,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Konsumsi Listrik'), findsOneWidget);
 
-    await tester.tap(find.text('Profil'));
+    await tester.tap(find.bySemanticsLabel('Nekouse'));
+    await tester.pumpAndSettle();
+    expect(find.text('PENJAGA RUMAH'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
     expect(find.text('Keamanan Sensor'), findsOneWidget);
     expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
