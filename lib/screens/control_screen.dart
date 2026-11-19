@@ -244,9 +244,7 @@ class ControlScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      useDummy
-                          ? 'Ruang Tengah • Mode demo'
-                          : 'Ruang Tengah • Data langsung',
+                      'Ruang Tengah',
                       style: TextStyle(
                         color: context.space.inkMuted,
                         fontSize: 12,
@@ -255,57 +253,34 @@ class ControlScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: danger
-                      ? SpacePalette.dangerBackground
-                      : context.space.surface,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: BoxDecoration(
-                        color: danger
-                            ? SpacePalette.danger
-                            : useDummy
-                            ? context.space.accent
-                            : SpacePalette.safe,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      danger
-                          ? 'Gas bahaya'
-                          : useDummy
-                          ? 'Demo'
-                          : 'Live',
-                      style: TextStyle(
-                        color: danger ? SpacePalette.danger : context.space.ink,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+              SpaceToggle(
+                value: connected,
+                onChanged: (_) => onRetry(),
+                semanticLabel: connected
+                    ? 'Hub aktif'
+                    : 'Hub nonaktif, ketuk untuk mencoba koneksi',
               ),
             ],
           ),
           const SizedBox(height: 28),
-          Text(
-            '$humidity% kelembapan',
-            style: TextStyle(
-              color: context.space.inkMuted,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.water_drop_rounded,
+                size: 16,
+                color: context.space.ink,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '$humidity%',
+                style: TextStyle(
+                  color: context.space.ink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 5),
           Row(
