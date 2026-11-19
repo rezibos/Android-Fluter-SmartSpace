@@ -281,6 +281,7 @@ class _HomeShellState extends State<HomeShell> {
         ),
         onRetry: _poll,
         onViewSensors: () => setState(() => _tab = 1),
+        onViewElectricity: () => setState(() => _tab = 3),
       ),
       SensorScreen(
         snapshot: _snapshot,
