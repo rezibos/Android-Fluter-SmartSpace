@@ -30,8 +30,18 @@ class SpaceToggle extends StatelessWidget {
           height: 32,
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
-            color: value ? context.space.active : context.space.muted,
+            color: value
+                ? context.space.active
+                : Color.alphaBlend(
+                    context.space.active.withValues(alpha: .12),
+                    context.space.surface,
+                  ),
             borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: value
+                  ? context.space.active
+                  : context.space.active.withValues(alpha: .28),
+            ),
           ),
           alignment: value ? Alignment.centerRight : Alignment.centerLeft,
           child: Container(
