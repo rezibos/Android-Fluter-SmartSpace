@@ -1,0 +1,350 @@
+<!DOCTYPE html><html lang="id"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Lampu — Nekouse Smart Space</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#111111',
+        'on-primary': '#FFFFFF',
+        'surface': '#FFFFFF',
+        'on-surface': '#111111',
+        'surface-muted': '#EDEDEF',
+        'on-surface-muted': '#59595E',
+        'surface-variant': '#F4F4F5',
+        'on-surface-variant': '#111111',
+        'border': '#E5E5E7',
+        'active': '#111111',
+        'on-active': '#FFFFFF',
+        'track': '#E5E5E7',
+        'orange-accent': '#FF6A1A',
+        'on-orange-accent': '#313131',
+        'safe': '#1B7340',
+        'on-safe': '#FFFFFF',
+        'warn': '#9A6200',
+        'on-warn': '#FFFFFF',
+        'danger': '#B91C1C',
+        'on-danger': '#FFFFFF',
+        'danger-bg': '#FDECEC',
+        'on-danger-bg': '#991B1B',
+        'info': '#1D4ED8',
+        'on-info': '#FFFFFF',
+        'light-primary': '#111111',
+        'light-on-primary': '#FFFFFF',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#111111',
+        'light-background': '#F4F4F5',
+        'light-on-background': '#111111',
+        'dark-primary': '#FFFFFF',
+        'dark-on-primary': '#111111',
+        'dark-surface': '#1A1A1D',
+        'dark-on-surface': '#F5F5F6',
+        'dark-background': '#0E0E10',
+        'dark-on-background': '#F5F5F6',
+      },
+      borderRadius: {
+        'sm': '8px',
+        'md': '16px',
+        'lg': '24px',
+        'xl': '28px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '20px',
+        'section': '24px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"DM Sans"', 'sans-serif'],
+        'headline': ['"DM Sans"', 'sans-serif'],
+        'title': ['"DM Sans"', 'sans-serif'],
+        'body': ['"DM Sans"', 'sans-serif'],
+        'label': ['"DM Sans"', 'sans-serif'],
+      },
+      fontSize: {
+        'display-lg': ['56px', { lineHeight: '64px', letterSpacing: '-1px', fontWeight: '700' }],
+        'display-lg-mobile': ['32px', { lineHeight: '40px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'headline-md': ['20px', { lineHeight: '28px', fontWeight: '600' }],
+        'title-lg': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.4px', fontWeight: '500' }],
+        'label-lg': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '180ms',
+        'surface-enter': '200ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>
+    .material-symbols-outlined {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      line-height: 1 !important;
+      box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
+      direction: ltr;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-light-background text-primary font-body antialiased selection:bg-primary selection:text-white">
+  <div class="min-h-[884px] max-w-[390px] mx-auto bg-light-background relative flex flex-col justify-between pb-8 transition-colors duration-state-change" id="screenContainer" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Top Navigation -->
+    <header class="px-5 pt-8 pb-3 flex items-center justify-between">
+      <a href="../kontrol/KontrolBeranda.html" aria-label="Kembali ke Beranda" class="w-11 h-11 rounded-full bg-white flex items-center justify-center border border-border shadow-sm active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-primary text-[22px]">arrow_back</span>
+      </a>
+
+      <!-- State Pill Toggle (Interactive) -->
+      <div class="flex items-center gap-1.5 p-1 rounded-full bg-surface-muted border border-border">
+        <button type="button" id="tabOn" onclick="setLampState(true)" class="px-3 py-1 rounded-full text-white bg-primary font-label text-label-sm font-semibold transition-all">
+          Menyala
+        </button>
+        <button type="button" id="tabOff" onclick="setLampState(false)" class="px-3 py-1 rounded-full text-on-surface-muted font-label text-label-sm font-medium transition-all">
+          Mati
+        </button>
+      </div>
+
+      <button type="button" aria-label="Opsi lainnya" class="w-11 h-11 rounded-full bg-white flex items-center justify-center border border-border shadow-sm active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-primary text-[22px]">more_horiz</span>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-5 flex-1 flex flex-col justify-between space-y-4">
+
+      <!-- Header Lamp Showcase with Physical Glow & Toggle -->
+      <div class="relative bg-white border border-border rounded-xl p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] overflow-hidden transition-all" id="lampCard">
+        
+        <!-- Ambient Warm Glow when ON -->
+        <div id="lampAmbientGlow" class="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-amber-400/20 blur-3xl pointer-events-none transition-opacity duration-300"></div>
+
+        <div class="flex items-start justify-between relative z-10">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span id="lampBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-safe text-white font-label text-label-sm font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                <span id="badgeText">Aktif</span>
+              </span>
+              <span class="font-label text-label-sm text-on-surface-muted">Kamar Tidur Utama</span>
+            </div>
+            <h1 data-design-text-token="headline-lg" class="font-headline text-headline-lg font-bold text-primary tracking-tight leading-tight">Lampu Kamar</h1>
+            <p id="lampSubtitle" data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted mt-0.5">Menyala sejak 4 jam lalu</p>
+          </div>
+
+          <!-- Master Switch Pil 56x32 dp -->
+          <button type="button" id="masterSwitch" onclick="toggleLamp()" role="switch" aria-checked="true" aria-label="Sakelar Lampu" class="w-14 h-8 bg-primary rounded-full p-1 flex items-center justify-end transition-all shadow-sm active:scale-95">
+            <span id="switchKnob" class="w-6 h-6 rounded-full bg-white shadow-sm inline-block transition-all"></span>
+          </button>
+        </div>
+
+        <!-- Realistic Pendant Lamp Graphic Representation -->
+        <div class="mt-4 flex flex-col items-center justify-center relative">
+          <!-- Cord line -->
+          <div class="w-1 h-6 bg-primary/30"></div>
+          
+          <!-- Image Box with Dynamic State -->
+          <div class="relative w-44 h-44 flex items-center justify-center">
+            <!-- Lamp Light Beam (SVG Glow when ON) -->
+            <div id="lightBeam" class="absolute top-20 w-40 h-32 bg-gradient-to-b from-amber-300/30 via-amber-200/10 to-transparent clip-path-beam pointer-events-none transition-all duration-300"></div>
+            
+            <img id="lampImg" src="https://lh3.googleusercontent.com/aida/ALJJyrBc5u9N9tCBV_QPMr-YF951fFVhfVuogehWKjcHCiO89TtWRdrxHgZ7eUdCIa8rIMUBh13nBA0463jbRAr_2w7sgZaWSriBd4_3-BtNRnF-Z83UkLCTA4u07q9RRQUja-O7M3HNE_CwuT6KiD2c4fwbM_SLlyPkii0t8NtP_UM9DFUMvh9ET8DFDNEEpls0SsiDWmglgW-uDitE51K4I2GXmNkAfrK-VspxYlVPj__eJePWA4A7AheM" alt="Lampu Kamar Menyala" class="w-full h-full object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.18)] transition-all duration-300">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Arc Brightness Control Area (Reference 1 Style) -->
+      <section class="bg-white border border-border rounded-xl p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] transition-all" id="controlsCard">
+        <div class="flex items-center justify-between">
+          
+          <!-- Curved Arc Slider -->
+          <div class="relative w-40 h-52 flex items-center">
+            <svg class="w-full h-full" viewBox="0 0 160 220" fill="none">
+              <!-- Background Arc Track -->
+              <path d="M 30 20 A 90 90 0 0 1 30 200" stroke="#E5E5E7" stroke-width="6" stroke-linecap="round"></path>
+              <!-- Active Progress Arc (47%) -->
+              <path id="arcProgress" d="M 30 200 A 90 90 0 0 0 110 148" stroke="#111111" stroke-width="7" stroke-linecap="round" class="transition-all duration-300"></path>
+              <!-- Draggable Knob -->
+              <circle id="arcKnob" cx="110" cy="148" r="11" fill="#111111" stroke="#FFFFFF" stroke-width="3" filter="drop-shadow(0px 3px 6px rgba(0,0,0,0.25))" class="transition-all duration-300"></circle>
+            </svg>
+
+            <!-- High / Low Labels -->
+            <span class="absolute top-1 left-5 font-label text-label-md font-medium text-on-surface-muted">High</span>
+            <span class="absolute bottom-1 left-5 font-label text-label-md font-medium text-on-surface-muted">Low</span>
+          </div>
+
+          <!-- Large Display Number (Kecerahan) -->
+          <div class="text-right pr-2">
+            <div id="brightnessVal" data-design-text-token="display-lg" class="font-display text-display-lg font-bold text-primary tracking-tighter tabular-nums leading-none">
+              47%
+            </div>
+            <p data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-on-surface-muted mt-2">Kecerahan</p>
+            <div class="mt-2 inline-flex items-center gap-1 text-on-surface-muted font-label text-label-sm font-medium">
+              <span class="material-symbols-outlined text-[16px] text-amber-500">light_mode</span>
+              <span id="luxVal">240 Lux</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Linear Intensity Slider (Synced Scale) -->
+        <div class="mt-4 pt-4 border-t border-border/70 space-y-3">
+          <div class="flex justify-between items-center">
+            <span data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary">Intensitas Suhu Warna</span>
+            <span id="tempVal" data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary tabular-nums">3.200K (Warm)</span>
+          </div>
+
+          <!-- Slider Bar -->
+          <div class="relative w-full h-2.5 bg-track rounded-full">
+            <div id="intensityTrack" class="h-2.5 bg-gradient-to-r from-amber-400 to-primary rounded-full" style="width: 70%;"></div>
+            <div id="intensityKnob" class="absolute top-1/2 left-[70%] -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-primary border-2 border-white shadow-md cursor-pointer"></div>
+          </div>
+
+          <!-- Scale Ticks -->
+          <div class="flex justify-between items-center text-on-surface-muted font-label text-label-md px-0.5">
+            <span class="font-medium">2000K</span>
+            <span>|</span>
+            <span>|</span>
+            <span>|</span>
+            <span>|</span>
+            <span class="font-medium">6500K</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Power & Energy Consumption Summary for this Lamp -->
+      <section class="bg-white border border-border rounded-xl p-4 shadow-[0_8px_24px_rgba(17,17,17,0.04)] flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[22px]">bolt</span>
+          </div>
+          <div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary">Daya Saat Ini</span>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted" id="wattVal">8.5 Watt • 0.03 kWh hari ini</p>
+          </div>
+        </div>
+        <a href="../penggunaan-listrik/PenggunaanListrik.html" class="px-3 py-1.5 rounded-full bg-surface-variant text-primary font-label text-label-sm font-semibold hover:bg-surface-muted transition-colors">
+          Rincian
+        </a>
+      </section>
+
+      <!-- Bottom Action Button -->
+      <div>
+        <button type="button" id="btnToggleAction" onclick="toggleLamp()" class="w-full h-12 py-3 px-4 bg-surface-muted border border-border rounded-md font-label text-label-lg font-semibold text-primary flex items-center justify-center gap-2 hover:bg-border active:scale-[0.99] transition-all">
+          <span class="material-symbols-outlined text-[20px]" id="btnIcon">power_settings_new</span>
+          <span data-design-text-token="label-lg" id="btnText">Matikan lampu ini</span>
+        </button>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Interactive State Script -->
+  <script>
+    let isLampOn = true;
+
+    function setLampState(state) {
+      isLampOn = state;
+      updateUI();
+    }
+
+    function toggleLamp() {
+      isLampOn = !isLampOn;
+      updateUI();
+    }
+
+    function updateUI() {
+      const tabOn = document.getElementById('tabOn');
+      const tabOff = document.getElementById('tabOff');
+      const lampImg = document.getElementById('lampImg');
+      const lightBeam = document.getElementById('lightBeam');
+      const ambientGlow = document.getElementById('lampAmbientGlow');
+      const lampBadge = document.getElementById('lampBadge');
+      const badgeText = document.getElementById('badgeText');
+      const lampSubtitle = document.getElementById('lampSubtitle');
+      const masterSwitch = document.getElementById('masterSwitch');
+      const brightnessVal = document.getElementById('brightnessVal');
+      const luxVal = document.getElementById('luxVal');
+      const wattVal = document.getElementById('wattVal');
+      const arcProgress = document.getElementById('arcProgress');
+      const arcKnob = document.getElementById('arcKnob');
+      const btnIcon = document.getElementById('btnIcon');
+      const btnText = document.getElementById('btnText');
+      const controlsCard = document.getElementById('controlsCard');
+
+      if (isLampOn) {
+        tabOn.className = "px-3 py-1 rounded-full text-white bg-primary font-label text-label-sm font-semibold transition-all";
+        tabOff.className = "px-3 py-1 rounded-full text-on-surface-muted font-label text-label-sm font-medium transition-all";
+        lampImg.src = "../../images/lamp_state_on.jpg";
+        lampImg.style.opacity = "1";
+        lightBeam.style.opacity = "1";
+        ambientGlow.style.opacity = "1";
+        lampBadge.className = "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-safe text-white font-label text-label-sm font-medium";
+        badgeText.textContent = "Aktif";
+        lampSubtitle.textContent = "Menyala sejak 4 jam lalu";
+        masterSwitch.className = "w-14 h-8 bg-primary rounded-full p-1 flex items-center justify-end transition-all shadow-sm active:scale-95";
+        brightnessVal.textContent = "47%";
+        brightnessVal.classList.remove('text-on-surface-muted');
+        brightnessVal.classList.add('text-primary');
+        luxVal.textContent = "240 Lux";
+        wattVal.textContent = "8.5 Watt • 0.03 kWh hari ini";
+        arcProgress.setAttribute('stroke', '#111111');
+        arcKnob.setAttribute('fill', '#111111');
+        btnText.textContent = "Matikan lampu ini";
+        controlsCard.classList.remove('opacity-50');
+      } else {
+        tabOn.className = "px-3 py-1 rounded-full text-on-surface-muted font-label text-label-sm font-medium transition-all";
+        tabOff.className = "px-3 py-1 rounded-full text-white bg-primary font-label text-label-sm font-semibold transition-all";
+        lampImg.src = "../../images/lamp_state_off.jpg";
+        lampImg.style.opacity = "0.75";
+        lightBeam.style.opacity = "0";
+        ambientGlow.style.opacity = "0";
+        lampBadge.className = "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-muted text-on-surface-muted font-label text-label-sm font-medium";
+        badgeText.textContent = "Mati";
+        lampSubtitle.textContent = "Lampu dalam keadaan nonaktif";
+        masterSwitch.className = "w-14 h-8 bg-surface-muted rounded-full p-1 flex items-center justify-start transition-all shadow-sm active:scale-95";
+        brightnessVal.textContent = "0%";
+        brightnessVal.classList.remove('text-primary');
+        brightnessVal.classList.add('text-on-surface-muted');
+        luxVal.textContent = "0 Lux";
+        wattVal.textContent = "0 Watt • Mode Siaga";
+        arcProgress.setAttribute('stroke', '#E5E5E7');
+        arcKnob.setAttribute('fill', '#6B6B70');
+        btnText.textContent = "Nyalakan lampu ini";
+        controlsCard.classList.add('opacity-50');
+      }
+    }
+  </script>
+
+
+</body></html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html><html lang="id"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengaturan &amp; Profil — Nekouse Smart Space</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#111111',
+        'on-primary': '#FFFFFF',
+        'surface': '#FFFFFF',
+        'on-surface': '#111111',
+        'surface-muted': '#EDEDEF',
+        'on-surface-muted': '#59595E',
+        'surface-variant': '#F4F4F5',
+        'on-surface-variant': '#111111',
+        'border': '#E5E5E7',
+        'active': '#111111',
+        'on-active': '#FFFFFF',
+        'track': '#E5E5E7',
+        'orange-accent': '#FF6A1A',
+        'on-orange-accent': '#313131',
+        'safe': '#1B7340',
+        'on-safe': '#FFFFFF',
+        'warn': '#9A6200',
+        'on-warn': '#FFFFFF',
+        'danger': '#B91C1C',
+        'on-danger': '#FFFFFF',
+        'danger-bg': '#FDECEC',
+        'on-danger-bg': '#991B1B',
+        'info': '#1D4ED8',
+        'on-info': '#FFFFFF',
+        'light-primary': '#111111',
+        'light-on-primary': '#FFFFFF',
+        'light-surface': '#FFFFFF',
+        'light-on-surface': '#111111',
+        'light-background': '#F4F4F5',
+        'light-on-background': '#111111',
+        'dark-primary': '#FFFFFF',
+        'dark-on-primary': '#111111',
+        'dark-surface': '#1A1A1D',
+        'dark-on-surface': '#F5F5F6',
+        'dark-background': '#0E0E10',
+        'dark-on-background': '#F5F5F6',
+      },
+      borderRadius: {
+        'sm': '8px',
+        'md': '16px',
+        'lg': '24px',
+        'xl': '28px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '20px',
+        'section': '24px',
+        'page-margin': '20px',
+      },
+      fontFamily: {
+        'display': ['"DM Sans"', 'sans-serif'],
+        'headline': ['"DM Sans"', 'sans-serif'],
+        'title': ['"DM Sans"', 'sans-serif'],
+        'body': ['"DM Sans"', 'sans-serif'],
+        'label': ['"DM Sans"', 'sans-serif'],
+      },
+      fontSize: {
+        'display-lg': ['56px', { lineHeight: '64px', letterSpacing: '-1px', fontWeight: '700' }],
+        'display-lg-mobile': ['32px', { lineHeight: '40px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'headline-md': ['20px', { lineHeight: '28px', fontWeight: '600' }],
+        'title-lg': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'label-md': ['12px', { lineHeight: '16px', letterSpacing: '0.4px', fontWeight: '500' }],
+        'label-lg': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+        'label-sm': ['11px', { lineHeight: '14px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '180ms',
+        'surface-enter': '200ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'surface-enter': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'surface-enter': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+  <style>
+    .material-symbols-outlined {
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      line-height: 1 !important;
+      box-sizing: content-box;
+      overflow: hidden;
+      white-space: nowrap;
+      direction: ltr;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-light-background text-primary font-body antialiased selection:bg-primary selection:text-white">
+  <div class="min-h-[884px] max-w-[390px] mx-auto bg-light-background relative flex flex-col justify-between pb-28" data-stitch-vh="min-h-[884px]===min-h-screen">
+
+    <!-- Top Navigation -->
+    <header class="px-5 pt-8 pb-3 flex items-center justify-between">
+      <a href="../kontrol/KontrolBeranda.html" aria-label="Kembali ke Beranda" class="w-11 h-11 rounded-full bg-white flex items-center justify-center border border-border shadow-sm active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-primary text-[22px]">arrow_back</span>
+      </a>
+
+      <div>
+        <h1 data-design-text-token="title-lg" class="font-title text-title-lg font-bold text-primary text-center">Pengaturan &amp; Akun</h1>
+      </div>
+
+      <button type="button" aria-label="Bantuan" class="w-11 h-11 rounded-full bg-white flex items-center justify-center border border-border shadow-sm active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-primary text-[22px]">help</span>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="px-5 space-y-4">
+
+      <!-- Profile Card (Section 7.9 & 7.10) -->
+      <section class="bg-white border border-border rounded-xl p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] relative">
+        <div class="flex items-center gap-4">
+          <div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-primary/20 shadow-sm flex-shrink-0">
+            <img src="https://lh3.googleusercontent.com/aida/ALJJyrDoSJdtRbhnkqSsdmAO5VCF1ZI_7VbMzXgvWKNiC2S6-0DSRrInAv-fowtEUqWKaCSKSwcsNzpYH6KWhSn8dVgGuHlxEX0mKGAc5l3pT6IChf3TloqJyauNF5Wji-jFHJqjt7EgwSyueLEmT0kfcvOnH4P_TITgHzbosqAy2xHlQ6LaYSlou9TaQ5xU-bAOCM_F8PZiy-A2SS82RsZmKxqNXqPMFQdOFFPP4i8qKTvRn6PwI68k" alt="Foto Willy" class="w-full h-full object-cover">
+            <button type="button" aria-label="Ubah foto profil" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+              <span class="material-symbols-outlined text-white text-[20px]">photo_camera</span>
+            </button>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+              <h2 data-design-text-token="title-lg" class="font-title text-title-lg font-bold text-primary truncate">Willy Alexander</h2>
+              <button type="button" class="px-2.5 py-1 rounded-full bg-surface-variant font-label text-label-sm font-semibold text-primary hover:bg-surface-muted transition-colors">
+                Ubah
+              </button>
+            </div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted truncate mt-0.5">willy@smartspace.id</p>
+            <span class="inline-flex items-center gap-1 mt-1 font-label text-label-sm text-safe font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-safe"></span> Pemilik Rumah Utama
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Smart Space Hub Connection Card (Section 7.9) -->
+      <section class="bg-white border border-border rounded-xl p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] space-y-3">
+        <div class="flex items-center justify-between">
+          <span data-design-text-token="label-md" class="font-label text-label-md font-medium text-on-surface-muted uppercase tracking-wider">Perangkat Utama</span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-safe text-white font-label text-label-sm font-medium">
+            <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Terhubung
+          </span>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-lg bg-surface-variant flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-[24px]">hub</span>
+            </div>
+            <div>
+              <h3 data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary">Smart Space Hub v2</h3>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted">IP: 192.168.1.108 • Wi-Fi 5GHz</p>
+            </div>
+          </div>
+          <button type="button" aria-label="Sinkronisasi Hub" class="w-9 h-9 rounded-full bg-surface-variant flex items-center justify-center hover:bg-surface-muted text-primary active:scale-95 transition-all">
+            <span class="material-symbols-outlined text-[18px]">sync</span>
+          </button>
+        </div>
+
+        <div class="pt-2 border-t border-border/70 flex items-center justify-between text-on-surface-muted font-label text-label-sm">
+          <span>Sinkronisasi terakhir: 5 detik lalu</span>
+          <span class="text-safe font-medium">Sinyal 98% (Sangat Baik)</span>
+        </div>
+      </section>
+
+      <!-- Sensor Safety & Gas Alarm Threshold (Section 7.9 - FR-PMP-03 & Alarm Gas) -->
+      <section class="bg-white border border-border rounded-xl p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] space-y-4">
+        <div class="flex items-center justify-between">
+          <span data-design-text-token="label-md" class="font-label text-label-md font-medium text-on-surface-muted uppercase tracking-wider">Keamanan &amp; Ambang Sensor</span>
+          <span class="px-2 py-0.5 rounded bg-danger-bg text-danger font-label text-label-sm font-semibold">Prioritas Tinggi</span>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-baseline mb-2">
+            <div>
+              <h3 data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary">Batas Bahaya Gas (MQ-2)</h3>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted">Buzzer aktif bila gas melewati nilai ini</p>
+            </div>
+            <span id="gasThresholdVal" class="font-title text-title-lg font-bold text-danger tabular-nums">400 ppm</span>
+          </div>
+
+          <!-- Slider Ambang Gas -->
+          <div class="relative w-full h-2.5 bg-track rounded-full my-3">
+            <div id="gasTrack" class="h-2.5 bg-danger rounded-full" style="width: 60%;"></div>
+            <div id="gasKnob" class="absolute top-1/2 left-[60%] -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-danger border-2 border-white shadow-md cursor-pointer"></div>
+          </div>
+
+          <div class="flex justify-between items-center text-on-surface-muted font-label text-label-sm px-0.5">
+            <span>100 (Aman)</span>
+            <span class="font-semibold text-primary">Ambang (400)</span>
+            <span>600 (Kritis)</span>
+          </div>
+        </div>
+
+        <!-- Alarm Switches -->
+        <div class="pt-3 border-t border-border/70 space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-danger text-[22px]">volume_up</span>
+              <div>
+                <p data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary">Alarm Buzzer Hub</p>
+                <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted">Bunyi sirine keras di perangkat fisik</p>
+              </div>
+            </div>
+            <button type="button" role="switch" aria-checked="true" aria-label="Buzzer Hub" class="w-12 h-7 bg-primary rounded-full p-0.5 flex justify-end items-center transition-all">
+              <span class="w-6 h-6 rounded-full bg-white shadow-sm inline-block"></span>
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-border/50">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-primary text-[22px]">notifications_active</span>
+              <div>
+                <p data-design-text-token="title-lg" class="font-title text-title-lg font-semibold text-primary">Notifikasi Darurat HP</p>
+                <p data-design-text-token="body-md" class="font-body text-body-md text-on-surface-muted">Kirim pesan darurat instan ke ponsel</p>
+              </div>
+            </div>
+            <button type="button" role="switch" aria-checked="true" aria-label="Notifikasi HP" class="w-12 h-7 bg-primary rounded-full p-0.5 flex justify-end items-center transition-all">
+              <span class="w-6 h-6 rounded-full bg-white shadow-sm inline-block"></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Theme Switcher: Tema A (Monokrom) vs Tema B (Oranye) (Section 2.1 & 2.2) -->
+      <section class="bg-white border border-border rounded-xl p-5 shadow-[0_8px_24px_rgba(17,17,17,0.04)] space-y-3">
+        <span data-design-text-token="label-md" class="font-label text-label-md font-medium text-on-surface-muted uppercase tracking-wider">Pilihan Tema Aplikasi</span>
+
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          
+          <!-- Option 1: Monokrom (Active Default) -->
+          <button type="button" id="themeMonoBtn" onclick="selectTheme(&#39;mono&#39;)" class="p-3.5 rounded-lg border-2 border-primary bg-surface-variant flex flex-col gap-2.5 text-left transition-all">
+            <div class="flex items-center justify-between">
+              <span class="font-title text-title-lg font-bold text-primary">Monokrom</span>
+              <span id="monoDot" class="w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center">
+                <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+              </span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-black border border-white/20"></span>
+              <span class="w-5 h-5 rounded-full bg-white border border-border"></span>
+              <span class="w-5 h-5 rounded-full bg-neutral-200"></span>
+            </div>
+            <span class="font-label text-label-sm text-on-surface-muted">Hitam-putih minimalis</span>
+          </button>
+
+          <!-- Option 2: Aksen Oranye (Tema B) -->
+          <button type="button" id="themeOrangeBtn" onclick="selectTheme(&#39;orange&#39;)" class="p-3.5 rounded-lg border border-border bg-white flex flex-col gap-2.5 text-left transition-all hover:border-orange-accent">
+            <div class="flex items-center justify-between">
+              <span class="font-title text-title-lg font-bold text-primary">Aksen Oranye</span>
+              <span id="orangeDot" class="w-4 h-4 rounded-full border border-border flex items-center justify-center"></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-5 h-5 rounded-full bg-orange-accent"></span>
+              <span class="w-5 h-5 rounded-full bg-surface-variant border border-border"></span>
+              <span class="w-5 h-5 rounded-full bg-primary"></span>
+            </div>
+            <span class="font-label text-label-sm text-on-surface-muted">Hangat &amp; dinamis</span>
+          </button>
+
+        </div>
+      </section>
+
+      <!-- Logout Button (Section 5.11 & 7.9) -->
+      <div class="pt-2">
+        <button type="button" class="w-full h-12 py-3 px-4 bg-white border border-danger/40 text-danger rounded-md font-label text-label-lg font-semibold flex items-center justify-center gap-2 hover:bg-danger-bg active:scale-[0.99] transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[20px]">logout</span>
+          <span data-design-text-token="label-lg">Keluar dari Akun</span>
+        </button>
+        <p class="text-center font-label text-label-sm text-on-surface-muted mt-3">Smart Space Nekouse • Versi 1.4.2 (Build 2026)</p>
+      </div>
+
+    </main>
+
+    <!-- Floating Pill Bottom Navigation -->
+    <div class="fixed bottom-6 left-0 right-0 max-w-[390px] mx-auto px-6 pointer-events-none z-30">
+      <nav aria-label="Navigasi Utama" class="pointer-events-auto bg-white border border-border/80 shadow-[0_12px_32px_rgba(17,17,17,0.12)] rounded-full p-2 flex items-center justify-between">
+        
+        <!-- Tab 1: Kontrol -->
+        <a href="../kontrol/KontrolBeranda.html" class="w-12 h-10 rounded-full flex items-center justify-center text-on-surface-muted hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[22px]">tune</span>
+        </a>
+
+        <!-- Tab 2: Grafik -->
+        <a href="../grafik-sensor/GrafikSensor.html" class="w-12 h-10 rounded-full flex items-center justify-center text-on-surface-muted hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[22px]">monitoring</span>
+        </a>
+
+        <!-- Tab 3: Listrik -->
+        <a href="../penggunaan-listrik/PenggunaanListrik.html" class="w-12 h-10 rounded-full flex items-center justify-center text-on-surface-muted hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[22px]">bolt</span>
+        </a>
+
+        <!-- Tab 4: Pengaturan (Active) -->
+        <a href="PengaturanProfil.html" class="flex items-center gap-2 bg-primary text-white py-2 px-5 rounded-full font-label text-label-md font-semibold shadow-sm">
+          <span class="material-symbols-outlined text-[20px]">settings</span>
+          <span data-design-text-token="label-md">Profil</span>
+        </a>
+
+      </nav>
+    </div>
+
+  </div>
+
+  <script>
+    function selectTheme(theme) {
+      const monoBtn = document.getElementById('themeMonoBtn');
+      const orangeBtn = document.getElementById('themeOrangeBtn');
+      const monoDot = document.getElementById('monoDot');
+      const orangeDot = document.getElementById('orangeDot');
+
+      if (theme === 'mono') {
+        monoBtn.className = "p-3.5 rounded-lg border-2 border-primary bg-surface-variant flex flex-col gap-2.5 text-left transition-all";
+        orangeBtn.className = "p-3.5 rounded-lg border border-border bg-white flex flex-col gap-2.5 text-left transition-all hover:border-orange-accent";
+        monoDot.innerHTML = '<span class="w-2 h-2 rounded-full bg-primary inline-block"></span>';
+        monoDot.className = "w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center";
+        orangeDot.innerHTML = '';
+        orangeDot.className = "w-4 h-4 rounded-full border border-border flex items-center justify-center";
+      } else {
+        orangeBtn.className = "p-3.5 rounded-lg border-2 border-orange-accent bg-surface-variant flex flex-col gap-2.5 text-left transition-all";
+        monoBtn.className = "p-3.5 rounded-lg border border-border bg-white flex flex-col gap-2.5 text-left transition-all hover:border-primary";
+        orangeDot.innerHTML = '<span class="w-2 h-2 rounded-full bg-orange-accent inline-block"></span>';
+        orangeDot.className = "w-4 h-4 rounded-full border-2 border-orange-accent flex items-center justify-center";
+        monoDot.innerHTML = '';
+        monoDot.className = "w-4 h-4 rounded-full border border-border flex items-center justify-center";
+      }
+    }
+  </script>
+
+
+</body></html>
