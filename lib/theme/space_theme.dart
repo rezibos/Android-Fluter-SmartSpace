@@ -12,6 +12,7 @@ class SpacePalette extends ThemeExtension<SpacePalette> {
     required this.inkMuted,
     required this.active,
     required this.onActive,
+    required this.accent,
   });
 
   final Color background;
@@ -22,6 +23,7 @@ class SpacePalette extends ThemeExtension<SpacePalette> {
   final Color inkMuted;
   final Color active;
   final Color onActive;
+  final Color accent;
 
   static const danger = Color(0xFFE5484D);
   static const dangerBackground = Color(0xFFFDECEC);
@@ -39,6 +41,7 @@ class SpacePalette extends ThemeExtension<SpacePalette> {
     Color? inkMuted,
     Color? active,
     Color? onActive,
+    Color? accent,
   }) => SpacePalette(
     background: background ?? this.background,
     surface: surface ?? this.surface,
@@ -48,6 +51,7 @@ class SpacePalette extends ThemeExtension<SpacePalette> {
     inkMuted: inkMuted ?? this.inkMuted,
     active: active ?? this.active,
     onActive: onActive ?? this.onActive,
+    accent: accent ?? this.accent,
   );
 
   @override
@@ -62,20 +66,22 @@ class SpacePalette extends ThemeExtension<SpacePalette> {
       inkMuted: Color.lerp(inkMuted, other.inkMuted, t)!,
       active: Color.lerp(active, other.active, t)!,
       onActive: Color.lerp(onActive, other.onActive, t)!,
+      accent: Color.lerp(accent, other.accent, t)!,
     );
   }
 }
 
 class SpaceTheme {
   static const monochromePalette = SpacePalette(
-    background: Color(0xFFF4F4F5),
+    background: Color(0xFFFFF8F2),
     surface: Colors.white,
-    muted: Color(0xFFEDEDEF),
-    border: Color(0xFFE5E5E7),
-    ink: Color(0xFF111111),
-    inkMuted: Color(0xFF6B6B70),
-    active: Color(0xFF111111),
+    muted: Color(0xFFF5EAE6),
+    border: Color(0xFFE9D9D5),
+    ink: Color(0xFF2B1820),
+    inkMuted: Color(0xFF75636A),
+    active: Color(0xFF7A1F35),
     onActive: Colors.white,
+    accent: Color(0xFFC89B5B),
   );
 
   static const orangePalette = SpacePalette(
@@ -87,6 +93,7 @@ class SpaceTheme {
     inkMuted: Color(0xFF6F6F66),
     active: Color(0xFFFF6A1A),
     onActive: Colors.white,
+    accent: Color(0xFFC89B5B),
   );
 
   static ThemeData build(SpaceThemeMode mode) {

@@ -101,7 +101,21 @@ class DeviceCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: foreground, size: 30),
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: isOn
+                      ? Colors.white.withValues(alpha: .13)
+                      : context.space.muted,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  icon,
+                  color: isOn ? foreground : context.space.active,
+                  size: 25,
+                ),
+              ),
               const Spacer(),
               Text(
                 name,

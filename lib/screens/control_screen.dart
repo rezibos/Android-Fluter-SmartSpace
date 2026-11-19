@@ -54,211 +54,348 @@ class ControlScreen extends StatelessWidget {
     return CustomScrollView(
       key: const PageStorageKey('control'),
       slivers: [
-        SliverPadding(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 120),
-          sliver: SliverList.list(
-            children: [
-              _header(context),
-              const SizedBox(height: 20),
-              _connectionCard(context),
-              if (danger) ...[
-                const SizedBox(height: 12),
-                AlarmBanner(gas: snapshot!.gas, threshold: gasThreshold),
-              ],
-              const SizedBox(height: 28),
-              Text(
-                '$_greeting\nRumah Willy',
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.w800,
-                  height: 1.12,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '$active dari ${rooms.length} lampu menyala',
-                style: TextStyle(color: context.space.inkMuted, fontSize: 15),
-              ),
-              const SizedBox(height: 22),
-              _roomChips(context),
-              const SizedBox(height: 28),
-              Row(
-                children: [
-                  const Text(
-                    'Perangkat',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '$active aktif',
-                    style: TextStyle(color: context.space.inkMuted),
-                  ),
+        SliverSafeArea(
+          bottom: false,
+          sliver: SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+            sliver: SliverList.list(
+              children: [
+                _header(context),
+                const SizedBox(height: 22),
+                _heroCard(context, active),
+                if (danger) ...[
+                  const SizedBox(height: 12),
+                  AlarmBanner(gas: snapshot!.gas, threshold: gasThreshold),
                 ],
-              ),
-              const SizedBox(height: 14),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: rooms.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  childAspectRatio: .9,
+                const SizedBox(height: 24),
+                _roomChips(context),
+                const SizedBox(height: 28),
+                Row(
+                  children: [
+                    const Text(
+                      'Perangkat',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '$active aktif',
+                      style: TextStyle(color: context.space.inkMuted),
+                    ),
+                  ],
                 ),
-                itemBuilder: (context, index) {
-                  final room = rooms[index];
-                  return DeviceCard(
-                    name: room.name,
-                    icon: room.icon,
-                    isOn: room.isOn,
-                    brightness: room.brightness.round(),
-                    enabled: connected,
-                    onToggle: (value) => onLightToggle(room, value),
-                    onTap: () => onLightTap(room),
-                  );
-                },
-              ),
-              const SizedBox(height: 28),
-              const Text(
-                'Pompa Air',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 12),
-              _pumpCard(context),
-              const SizedBox(height: 14),
-              SizedBox(
-                height: 52,
-                child: OutlinedButton.icon(
-                  onPressed: connected ? () => onAllLights(false) : null,
-                  icon: const Icon(Icons.lightbulb_outline),
-                  label: const Text('Matikan semua lampu'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: context.space.ink,
-                    side: BorderSide(color: context.space.border),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                const SizedBox(height: 14),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: rooms.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: .9,
+                  ),
+                  itemBuilder: (context, index) {
+                    final room = rooms[index];
+                    return DeviceCard(
+                      name: room.name,
+                      icon: room.icon,
+                      isOn: room.isOn,
+                      brightness: room.brightness.round(),
+                      enabled: connected,
+                      onToggle: (value) => onLightToggle(room, value),
+                      onTap: () => onLightTap(room),
+                    );
+                  },
+                ),
+                const SizedBox(height: 28),
+                const Text(
+                  'Pompa Air',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 12),
+                _pumpCard(context),
+                const SizedBox(height: 14),
+                SizedBox(
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    onPressed: connected ? () => onAllLights(false) : null,
+                    icon: const Icon(Icons.lightbulb_outline),
+                    label: const Text('Matikan semua lampu'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: context.space.active,
+                      backgroundColor: context.space.muted,
+                      side: BorderSide(color: context.space.border),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _header(BuildContext context) => Row(
-    children: [
-      Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: context.space.active,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Icon(Icons.pets_outlined, color: context.space.onActive),
-      ),
-      const SizedBox(width: 12),
-      const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'NEKOUSE',
-            style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.2),
-          ),
-          Text('Smart Space', style: TextStyle(fontSize: 12)),
-        ],
-      ),
-      const Spacer(),
-      IconButton(
-        tooltip: 'Notifikasi',
-        onPressed: onNotificationsTap,
-        icon: const Icon(Icons.notifications_none_rounded),
-      ),
-      IconButton(
-        tooltip: 'Profil',
-        onPressed: onProfileTap,
-        icon: CircleAvatar(
-          radius: 18,
-          backgroundColor: context.space.muted,
-          child: Icon(Icons.person_outline, color: context.space.ink),
-        ),
-      ),
-    ],
-  );
-
-  Widget _connectionCard(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-    decoration: BoxDecoration(
-      color: context.space.surface,
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: context.space.border),
-    ),
+  Widget _header(BuildContext context) => SizedBox(
+    height: 52,
     child: Row(
       children: [
-        Icon(
-          connected ? Icons.wifi_rounded : Icons.wifi_off_rounded,
-          color: connected ? SpacePalette.safe : context.space.inkMuted,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                connected ? 'Hub terhubung' : 'Hub tidak terhubung',
-                style: const TextStyle(fontWeight: FontWeight.w700),
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: context.space.active,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: context.space.active.withValues(alpha: .2),
+                blurRadius: 18,
+                offset: const Offset(0, 7),
               ),
-              Text(
-                lastUpdated == null
-                    ? 'Belum ada data'
-                    : 'Terakhir diperbarui ${TimeOfDay.fromDateTime(lastUpdated!).format(context)}',
-                style: TextStyle(color: context.space.inkMuted, fontSize: 12),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Center(child: Icon(Icons.pets, color: context.space.onActive)),
+              Positioned(
+                right: 7,
+                top: 7,
+                child: Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: context.space.accent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
               ),
             ],
           ),
         ),
-        if (!connected)
-          TextButton(onPressed: onRetry, child: const Text('Coba lagi')),
+        const SizedBox(width: 12),
+        const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'NEKOUSE',
+              style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: 1.2),
+            ),
+            Text('Smart Space', style: TextStyle(fontSize: 12)),
+          ],
+        ),
+        const Spacer(),
+        IconButton(
+          tooltip: 'Notifikasi',
+          onPressed: onNotificationsTap,
+          style: IconButton.styleFrom(
+            backgroundColor: context.space.surface,
+            side: BorderSide(color: context.space.border),
+            minimumSize: const Size(44, 44),
+            shadowColor: const Color(0x16000000),
+            elevation: 2,
+          ),
+          icon: Icon(
+            Icons.notifications_none_rounded,
+            color: context.space.active,
+          ),
+        ),
+        const SizedBox(width: 6),
+        IconButton(
+          tooltip: 'Profil',
+          onPressed: onProfileTap,
+          style: IconButton.styleFrom(
+            backgroundColor: context.space.surface,
+            side: BorderSide(color: context.space.border),
+            minimumSize: const Size(44, 44),
+          ),
+          icon: Icon(Icons.person_outline, color: context.space.active),
+        ),
+      ],
+    ),
+  );
+
+  Widget _heroCard(BuildContext context, int active) => Container(
+    padding: const EdgeInsets.all(22),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF7A1F35), Color(0xFF591426)],
+      ),
+      borderRadius: BorderRadius.circular(28),
+      boxShadow: const [
+        BoxShadow(
+          color: Color(0x287A1F35),
+          blurRadius: 28,
+          offset: Offset(0, 12),
+        ),
+      ],
+    ),
+    child: Stack(
+      children: [
+        Positioned(
+          right: -25,
+          top: -38,
+          child: Container(
+            width: 112,
+            height: 112,
+            decoration: BoxDecoration(
+              color: context.space.accent.withValues(alpha: .16),
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .13),
+                    borderRadius: BorderRadius.circular(99),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: connected ? SpacePalette.safe : Colors.white54,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      Text(
+                        connected ? 'Hub terhubung' : 'Hub terputus',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+                if (!connected)
+                  TextButton(
+                    onPressed: onRetry,
+                    style: TextButton.styleFrom(foregroundColor: Colors.white),
+                    child: const Text('Coba lagi'),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              _greeting,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: .7),
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              'Rumah Willy',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$active dari ${rooms.length} lampu menyala',
+              style: TextStyle(color: Colors.white.withValues(alpha: .76)),
+            ),
+            if (lastUpdated != null) ...[
+              const SizedBox(height: 5),
+              Text(
+                'Diperbarui ${TimeOfDay.fromDateTime(lastUpdated!).format(context)}',
+                style: TextStyle(
+                  color: context.space.accent,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
+        ),
       ],
     ),
   );
 
   Widget _roomChips(BuildContext context) => SizedBox(
-    height: 44,
+    height: 72,
     child: ListView(
       scrollDirection: Axis.horizontal,
-      children: ['Semua', 'Tengah', 'Kamar', 'Dapur', 'Depan']
-          .map(
-            (label) => Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 17),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: label == 'Semua'
-                    ? context.space.active
-                    : context.space.surface,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: label == 'Semua'
-                      ? context.space.active
-                      : context.space.border,
+      children:
+          const [
+                ('Semua', Icons.grid_view_rounded),
+                ('Tengah', Icons.weekend_outlined),
+                ('Kamar', Icons.bed_outlined),
+                ('Dapur', Icons.soup_kitchen_outlined),
+                ('Depan', Icons.wb_twilight_outlined),
+              ]
+              .map(
+                (item) => Container(
+                  width: 68,
+                  margin: const EdgeInsets.only(right: 10),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: item.$1 == 'Semua'
+                        ? context.space.active
+                        : context.space.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: item.$1 == 'Semua'
+                          ? context.space.active
+                          : context.space.border,
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0F2B1820),
+                        blurRadius: 14,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        item.$2,
+                        size: 21,
+                        color: item.$1 == 'Semua'
+                            ? context.space.onActive
+                            : context.space.active,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        item.$1,
+                        style: TextStyle(
+                          color: item.$1 == 'Semua'
+                              ? context.space.onActive
+                              : context.space.inkMuted,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Text(
-                label,
-                style: TextStyle(
-                  color: label == 'Semua'
-                      ? context.space.onActive
-                      : context.space.ink,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          )
-          .toList(),
+              )
+              .toList(),
     ),
   );
 
@@ -278,10 +415,15 @@ class ControlScreen extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: context.space.muted,
+              color: relayOn
+                  ? context.space.active.withValues(alpha: .1)
+                  : context.space.muted,
               borderRadius: BorderRadius.circular(18),
             ),
-            child: const Icon(Icons.water_drop_outlined),
+            child: Icon(
+              Icons.water_drop_outlined,
+              color: relayOn ? context.space.accent : context.space.active,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(

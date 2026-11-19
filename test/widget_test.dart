@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:witdget/main.dart';
 import 'package:witdget/models/sensor_snapshot.dart';
 import 'package:witdget/services/esp32_service.dart';
+import 'package:witdget/theme/space_theme.dart';
 
 class FakeEsp32Service extends Esp32Service {
   @override
@@ -30,6 +31,11 @@ class FakeEsp32Service extends Esp32Service {
 }
 
 void main() {
+  test('default theme uses the approved maroon palette', () {
+    expect(SpaceTheme.monochromePalette.active, const Color(0xFF7A1F35));
+    expect(SpaceTheme.monochromePalette.background, const Color(0xFFFFF8F2));
+  });
+
   testWidgets('bottom navigation switches between the three main screens', (
     tester,
   ) async {

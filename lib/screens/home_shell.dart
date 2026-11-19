@@ -310,22 +310,24 @@ class _HomeShellState extends State<HomeShell> {
       extendBody: true,
       body: IndexedStack(index: _tab, children: screens),
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+        minimum: const EdgeInsets.fromLTRB(18, 0, 18, 14),
         child: Container(
-          height: 72,
-          padding: const EdgeInsets.all(8),
+          height: 64,
+          padding: const EdgeInsets.all(7),
           decoration: BoxDecoration(
             color: context.space.surface,
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: const [
+            borderRadius: BorderRadius.circular(99),
+            border: Border.all(color: context.space.border),
+            boxShadow: [
               BoxShadow(
-                color: Color(0x18000000),
-                blurRadius: 28,
-                offset: Offset(0, 10),
+                color: context.space.active.withValues(alpha: .12),
+                blurRadius: 30,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _navItem(0, Icons.tune_rounded, 'Kontrol'),
               _navItem(1, Icons.show_chart_rounded, 'Grafik'),
@@ -340,41 +342,49 @@ class _HomeShellState extends State<HomeShell> {
 
   Widget _navItem(int index, IconData icon, String label) {
     final selected = _tab == index;
-    return Expanded(
-      child: InkWell(
-        onTap: () => setState(() => _tab = index),
-        borderRadius: BorderRadius.circular(20),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          decoration: BoxDecoration(
-            color: selected ? context.space.active : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: selected
-                    ? context.space.onActive
-                    : context.space.inkMuted,
-              ),
-              if (selected) ...[
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.fade,
-                    softWrap: false,
-                    style: TextStyle(
-                      color: context.space.onActive,
-                      fontWeight: FontWeight.w700,
-                    ),
+    return InkWell(
+      onTap: () => setState(() => _tab = index),
+      borderRadius: BorderRadius.circular(99),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        width: selected ? 108 : 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: selected ? context.space.active : Colors.transparent,
+          borderRadius: BorderRadius.circular(99),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: context.space.active.withValues(alpha: .22),
+                    blurRadius: 12,
+                    offset: const Offset(0, 5),
                   ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 21,
+              color: selected ? context.space.onActive : context.space.active,
+            ),
+            if (selected) ...[
+              const SizedBox(width: 7),
+              Text(
+                label,
+                overflow: TextOverflow.fade,
+                softWrap: false,
+                style: TextStyle(
+                  color: context.space.onActive,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
                 ),
-              ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );

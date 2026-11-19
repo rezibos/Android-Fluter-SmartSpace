@@ -216,9 +216,9 @@ class SettingsScreen extends StatelessWidget {
           Expanded(
             child: _themeChoice(
               context,
-              'Monokrom',
+              'Maroon',
               SpaceThemeMode.monochrome,
-              const Color(0xFF111111),
+              const Color(0xFF7A1F35),
             ),
           ),
           const SizedBox(width: 12),
