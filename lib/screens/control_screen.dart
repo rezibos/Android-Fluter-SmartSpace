@@ -220,15 +220,6 @@ class ControlScreen extends StatelessWidget {
     final temperature = useDummy ? 26.6 : snapshot!.temperature;
     final humidity = useDummy ? 78 : snapshot!.humidity.round();
     final danger = useDummy ? false : snapshot!.isGasDanger(gasThreshold);
-    final isRaining = useDummy ? false : snapshot!.isRaining;
-    final soilLabel = useDummy
-        ? 'Normal'
-        : switch (snapshot?.soilState) {
-            SoilState.wet => 'Basah',
-            SoilState.normal => 'Normal',
-            SoilState.dry => 'Kering',
-            null => 'Normal',
-          };
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -343,12 +334,7 @@ class ControlScreen extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _sensorAction(
-                  context,
-                  Icons.water_outlined,
-                  'Udara',
-                  '$humidity%',
-                ),
+                child: _sensorAction(context, Icons.water_outlined, 'Udara'),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -356,7 +342,6 @@ class ControlScreen extends StatelessWidget {
                   context,
                   Icons.warning_amber_rounded,
                   'Gas',
-                  danger ? 'Bahaya' : 'Aman',
                   danger: danger,
                 ),
               ),
@@ -366,28 +351,14 @@ class ControlScreen extends StatelessWidget {
                   context,
                   Icons.water_drop_outlined,
                   'Hujan',
-                  isRaining ? 'Ya' : 'Tidak',
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: _sensorAction(
-                  context,
-                  Icons.grass_outlined,
-                  'Tanah',
-                  soilLabel,
-                ),
+                child: _sensorAction(context, Icons.grass_outlined, 'Tanah'),
               ),
             ],
           ),
-          if (useDummy) ...[
-            const SizedBox(height: 14),
-            TextButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Coba hubungkan lagi'),
-            ),
-          ],
         ],
       ),
     );
@@ -396,15 +367,14 @@ class ControlScreen extends StatelessWidget {
   Widget _sensorAction(
     BuildContext context,
     IconData icon,
-    String label,
-    String value, {
+    String label, {
     bool danger = false,
   }) => InkWell(
     onTap: onViewSensors,
     borderRadius: BorderRadius.circular(16),
     child: Container(
-      constraints: const BoxConstraints(minHeight: 72),
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 9),
+      constraints: const BoxConstraints(minHeight: 82),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
       decoration: BoxDecoration(
         color: context.space.surface,
         borderRadius: BorderRadius.circular(16),
@@ -413,20 +383,14 @@ class ControlScreen extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 19,
+            size: 25,
             color: danger ? SpacePalette.danger : context.space.active,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
             label,
             maxLines: 1,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700),
-          ),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: context.space.inkMuted, fontSize: 9),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
           ),
         ],
       ),
