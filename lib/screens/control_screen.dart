@@ -216,13 +216,19 @@ class ControlScreen extends StatelessWidget {
   );
 
   Widget _conditionPanel(BuildContext context) {
-    final danger = snapshot?.isGasDanger(gasThreshold) ?? false;
-    final soilLabel = switch (snapshot?.soilState) {
-      SoilState.wet => 'Basah',
-      SoilState.normal => 'Normal',
-      SoilState.dry => 'Kering',
-      null => '—',
-    };
+    final useDummy = !connected || snapshot == null;
+    final temperature = useDummy ? 26.6 : snapshot!.temperature;
+    final humidity = useDummy ? 78 : snapshot!.humidity.round();
+    final danger = useDummy ? false : snapshot!.isGasDanger(gasThreshold);
+    final isRaining = useDummy ? false : snapshot!.isRaining;
+    final soilLabel = useDummy
+        ? 'Normal'
+        : switch (snapshot?.soilState) {
+            SoilState.wet => 'Basah',
+            SoilState.normal => 'Normal',
+            SoilState.dry => 'Kering',
+            null => 'Normal',
+          };
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -247,9 +253,9 @@ class ControlScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      connected
-                          ? 'Data sensor langsung'
-                          : 'Hub belum terhubung',
+                      useDummy
+                          ? 'Ruang Tengah • Mode demo'
+                          : 'Ruang Tengah • Data langsung',
                       style: TextStyle(
                         color: context.space.inkMuted,
                         fontSize: 12,
@@ -277,9 +283,9 @@ class ControlScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: danger
                             ? SpacePalette.danger
-                            : connected
-                            ? SpacePalette.safe
-                            : context.space.inkMuted,
+                            : useDummy
+                            ? context.space.accent
+                            : SpacePalette.safe,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -287,9 +293,9 @@ class ControlScreen extends StatelessWidget {
                     Text(
                       danger
                           ? 'Gas bahaya'
-                          : connected
-                          ? 'Aman'
-                          : 'Offline',
+                          : useDummy
+                          ? 'Demo'
+                          : 'Live',
                       style: TextStyle(
                         color: danger ? SpacePalette.danger : context.space.ink,
                         fontSize: 11,
@@ -303,9 +309,7 @@ class ControlScreen extends StatelessWidget {
           ),
           const SizedBox(height: 28),
           Text(
-            snapshot == null
-                ? '—'
-                : '${snapshot!.humidity.round()}% kelembapan',
+            '$humidity% kelembapan',
             style: TextStyle(
               color: context.space.inkMuted,
               fontSize: 12,
@@ -315,43 +319,23 @@ class ControlScreen extends StatelessWidget {
           const SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _roundIndicator(
-                context,
-                snapshot?.isRaining == true
-                    ? Icons.water_drop_rounded
-                    : Icons.wb_sunny_outlined,
-                snapshot?.isRaining == true
-                    ? SpacePalette.info
-                    : context.space.accent,
-              ),
-              const SizedBox(width: 22),
               Text(
-                snapshot == null
-                    ? '—'
-                    : snapshot!.temperature.toStringAsFixed(1),
+                temperature.toStringAsFixed(1),
                 style: const TextStyle(
-                  fontSize: 64,
+                  fontSize: 72,
                   fontWeight: FontWeight.w500,
                   height: 1,
                   letterSpacing: -3,
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(bottom: 30, left: 3),
+                padding: EdgeInsets.only(top: 4, left: 3),
                 child: Text(
                   '°',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
                 ),
-              ),
-              const SizedBox(width: 14),
-              _roundIndicator(
-                context,
-                Icons.grass_outlined,
-                snapshot?.soilState == SoilState.dry
-                    ? SpacePalette.warning
-                    : SpacePalette.safe,
               ),
             ],
           ),
@@ -363,7 +347,7 @@ class ControlScreen extends StatelessWidget {
                   context,
                   Icons.water_outlined,
                   'Udara',
-                  snapshot == null ? '—' : '${snapshot!.humidity.round()}%',
+                  '$humidity%',
                 ),
               ),
               const SizedBox(width: 8),
@@ -372,11 +356,7 @@ class ControlScreen extends StatelessWidget {
                   context,
                   Icons.warning_amber_rounded,
                   'Gas',
-                  snapshot == null
-                      ? '—'
-                      : danger
-                      ? 'Bahaya'
-                      : 'Aman',
+                  danger ? 'Bahaya' : 'Aman',
                   danger: danger,
                 ),
               ),
@@ -386,11 +366,7 @@ class ControlScreen extends StatelessWidget {
                   context,
                   Icons.water_drop_outlined,
                   'Hujan',
-                  snapshot == null
-                      ? '—'
-                      : snapshot!.isRaining
-                      ? 'Ya'
-                      : 'Tidak',
+                  isRaining ? 'Ya' : 'Tidak',
                 ),
               ),
               const SizedBox(width: 8),
@@ -404,7 +380,7 @@ class ControlScreen extends StatelessWidget {
               ),
             ],
           ),
-          if (!connected) ...[
+          if (useDummy) ...[
             const SizedBox(height: 14),
             TextButton.icon(
               onPressed: onRetry,
@@ -416,18 +392,6 @@ class ControlScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _roundIndicator(BuildContext context, IconData icon, Color color) =>
-      Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: context.space.surface,
-          shape: BoxShape.circle,
-          border: Border.all(color: context.space.border),
-        ),
-        child: Icon(icon, color: color, size: 21),
-      );
 
   Widget _sensorAction(
     BuildContext context,
