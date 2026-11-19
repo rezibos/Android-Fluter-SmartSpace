@@ -49,6 +49,14 @@ class ControlScreen extends StatelessWidget {
     return 'Selamat malam,';
   }
 
+  double get _estimatedWatt =>
+      rooms.fold<double>(
+        0,
+        (total, room) => total + (room.isOn ? 18 * room.brightness / 100 : 0),
+      ) +
+      (relayOn ? 65 : 0) +
+      8;
+
   @override
   Widget build(BuildContext context) {
     final active = rooms.where((room) => room.isOn).length;
@@ -72,12 +80,10 @@ class ControlScreen extends StatelessWidget {
                 const SizedBox(height: 24),
                 _homeCondition(context),
                 const SizedBox(height: 16),
-                _usageSummary(context, active),
-                const SizedBox(height: 16),
                 _quickActions(context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 _roomChips(context),
-                const SizedBox(height: 28),
+                const SizedBox(height: 22),
                 Row(
                   children: [
                     const Text(
@@ -125,23 +131,6 @@ class ControlScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 _pumpCard(context),
-                const SizedBox(height: 14),
-                SizedBox(
-                  height: 52,
-                  child: OutlinedButton.icon(
-                    onPressed: connected ? () => onAllLights(false) : null,
-                    icon: const Icon(Icons.lightbulb_outline),
-                    label: const Text('Matikan semua lampu'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: context.space.active,
-                      backgroundColor: context.space.muted,
-                      side: BorderSide(color: context.space.border),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -229,14 +218,14 @@ class ControlScreen extends StatelessWidget {
   );
 
   Widget _heroCard(BuildContext context, int active) => Container(
-    padding: const EdgeInsets.all(22),
+    padding: const EdgeInsets.all(20),
     decoration: BoxDecoration(
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [Color(0xFF7A1F35), Color(0xFF591426)],
       ),
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(26),
       boxShadow: const [
         BoxShadow(
           color: Color(0x287A1F35),
@@ -247,18 +236,6 @@ class ControlScreen extends StatelessWidget {
     ),
     child: Stack(
       children: [
-        Positioned(
-          right: -25,
-          top: -38,
-          child: Container(
-            width: 112,
-            height: 112,
-            decoration: BoxDecoration(
-              color: context.space.accent.withValues(alpha: .16),
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -304,12 +281,12 @@ class ControlScreen extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
               _greeting,
               style: TextStyle(
                 color: Colors.white.withValues(alpha: .7),
-                fontSize: 14,
+                fontSize: 13,
               ),
             ),
             const SizedBox(height: 2),
@@ -317,23 +294,37 @@ class ControlScreen extends StatelessWidget {
               'Rumah Willy',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 30,
+                fontSize: 27,
                 fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              '$active dari ${rooms.length} lampu menyala',
-              style: TextStyle(color: Colors.white.withValues(alpha: .76)),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: .1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  _heroStat('$active/${rooms.length}', 'Lampu'),
+                  _heroDivider(),
+                  _heroStat(relayOn ? 'Aktif' : 'Mati', 'Pompa'),
+                  _heroDivider(),
+                  _heroStat(
+                    '${_estimatedWatt.toStringAsFixed(0)} W',
+                    'Estimasi',
+                  ),
+                ],
+              ),
             ),
             if (lastUpdated != null) ...[
-              const SizedBox(height: 5),
+              const SizedBox(height: 8),
               Text(
-                'Diperbarui ${TimeOfDay.fromDateTime(lastUpdated!).format(context)}',
+                'Sinkron ${TimeOfDay.fromDateTime(lastUpdated!).format(context)}',
                 style: TextStyle(
-                  color: context.space.accent,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withValues(alpha: .55),
+                  fontSize: 10,
                 ),
               ),
             ],
@@ -343,8 +334,38 @@ class ControlScreen extends StatelessWidget {
     ),
   );
 
+  Widget _heroStat(String value, String label) => Expanded(
+    child: Column(
+      children: [
+        Text(
+          value,
+          maxLines: 1,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: .6),
+            fontSize: 10,
+          ),
+        ),
+      ],
+    ),
+  );
+
+  Widget _heroDivider() => Container(
+    width: 1,
+    height: 28,
+    color: Colors.white.withValues(alpha: .15),
+  );
+
   Widget _roomChips(BuildContext context) => SizedBox(
-    height: 72,
+    height: 48,
     child: ListView(
       scrollDirection: Axis.horizontal,
       children:
@@ -357,45 +378,38 @@ class ControlScreen extends StatelessWidget {
               ]
               .map(
                 (item) => Container(
-                  width: 68,
-                  margin: const EdgeInsets.only(right: 10),
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: item.$1 == 'Semua'
                         ? context.space.active
                         : context.space.surface,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: item.$1 == 'Semua'
                           ? context.space.active
                           : context.space.border,
                     ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x0F2B1820),
-                        blurRadius: 14,
-                        offset: Offset(0, 5),
-                      ),
-                    ],
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         item.$2,
-                        size: 21,
+                        size: 18,
                         color: item.$1 == 'Semua'
                             ? context.space.onActive
                             : context.space.active,
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(width: 7),
                       Text(
                         item.$1,
                         style: TextStyle(
                           color: item.$1 == 'Semua'
                               ? context.space.onActive
                               : context.space.inkMuted,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -461,123 +475,82 @@ class ControlScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        SizedBox(
-          height: 105,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 10),
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return Container(
-                width: 106,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: context.space.surface,
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: context.space.border),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x0C2B1820),
-                      blurRadius: 16,
-                      offset: Offset(0, 6),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(item.$3, size: 21, color: item.$4),
-                    const Spacer(),
-                    Text(
-                      item.$2,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      item.$1,
-                      style: TextStyle(
-                        color: context.space.inkMuted,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.space.surface,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: context.space.border),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x0A2B1820),
+                blurRadius: 18,
+                offset: Offset(0, 7),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(child: _conditionItem(context, items[0])),
+                  Container(width: 1, height: 54, color: context.space.border),
+                  Expanded(child: _conditionItem(context, items[1])),
+                ],
+              ),
+              Divider(height: 1, color: context.space.border),
+              Row(
+                children: [
+                  Expanded(child: _conditionItem(context, items[2])),
+                  Container(width: 1, height: 54, color: context.space.border),
+                  Expanded(child: _conditionItem(context, items[3])),
+                ],
+              ),
+            ],
           ),
         ),
       ],
     );
   }
 
-  Widget _usageSummary(BuildContext context, int active) {
-    final lightWatt = rooms.fold<double>(
-      0,
-      (total, room) => total + (room.isOn ? 18 * room.brightness / 100 : 0),
-    );
-    final estimatedWatt = lightWatt + (relayOn ? 65 : 0) + 8;
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: context.space.muted,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: context.space.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: context.space.surface,
-              borderRadius: BorderRadius.circular(17),
-            ),
-            child: Icon(Icons.bolt_rounded, color: context.space.active),
+  Widget _conditionItem(
+    BuildContext context,
+    (String, String, IconData, Color) item,
+  ) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
+    child: Row(
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: item.$4.withValues(alpha: .1),
+            borderRadius: BorderRadius.circular(13),
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Penggunaan saat ini',
-                  style: TextStyle(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  '$active lampu aktif • Pompa ${relayOn ? 'aktif' : 'mati'}',
-                  style: TextStyle(color: context.space.inkMuted, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Icon(item.$3, size: 19, color: item.$4),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${estimatedWatt.toStringAsFixed(1)} W',
-                style: TextStyle(
-                  color: context.space.active,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
+                item.$2,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               Text(
-                'Estimasi',
-                style: TextStyle(color: context.space.inkMuted, fontSize: 10),
+                item.$1,
+                style: TextStyle(color: context.space.inkMuted, fontSize: 11),
               ),
             ],
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
   Widget _quickActions(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -593,7 +566,7 @@ class ControlScreen extends StatelessWidget {
             child: _quickButton(
               context,
               icon: Icons.lightbulb_rounded,
-              label: 'Nyalakan',
+              label: 'Semua Nyala',
               onTap: connected ? () => onAllLights(true) : null,
               filled: true,
             ),
@@ -603,17 +576,8 @@ class ControlScreen extends StatelessWidget {
             child: _quickButton(
               context,
               icon: Icons.lightbulb_outline,
-              label: 'Matikan',
+              label: 'Semua Mati',
               onTap: connected ? () => onAllLights(false) : null,
-            ),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: _quickButton(
-              context,
-              icon: Icons.monitor_heart_outlined,
-              label: 'Sensor',
-              onTap: onViewSensors,
             ),
           ),
         ],
@@ -628,7 +592,7 @@ class ControlScreen extends StatelessWidget {
     required VoidCallback? onTap,
     bool filled = false,
   }) => SizedBox(
-    height: 58,
+    height: 52,
     child: OutlinedButton(
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
@@ -640,15 +604,15 @@ class ControlScreen extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
-      child: Column(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 19),
-          const SizedBox(height: 3),
+          const SizedBox(width: 7),
           Text(
             label,
             maxLines: 1,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
           ),
         ],
       ),
