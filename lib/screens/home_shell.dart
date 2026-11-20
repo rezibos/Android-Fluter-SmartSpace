@@ -448,28 +448,35 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                 ]
               : null,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 21,
-              color: selected ? context.space.onActive : context.space.active,
-            ),
-            if (selected) ...[
-              const SizedBox(width: 7),
-              Text(
-                label,
-                overflow: TextOverflow.fade,
-                softWrap: false,
-                style: TextStyle(
-                  color: context.space.onActive,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final showLabel = selected && constraints.maxWidth >= 76;
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 21,
+                  color: selected
+                      ? context.space.onActive
+                      : context.space.active,
                 ),
-              ),
-            ],
-          ],
+                if (showLabel) ...[
+                  const SizedBox(width: 7),
+                  Text(
+                    label,
+                    overflow: TextOverflow.fade,
+                    softWrap: false,
+                    style: TextStyle(
+                      color: context.space.onActive,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
         ),
       ),
     );
