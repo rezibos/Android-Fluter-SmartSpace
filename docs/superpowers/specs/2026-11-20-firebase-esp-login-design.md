@@ -78,7 +78,7 @@ Menambahkan halaman Login sebagai gerbang aplikasi. Pengguna hanya dapat membuka
 
 ## Firebase dan Konfigurasi Android
 
-- Tambahkan `firebase_core` dan `firebase_auth` ke dependency Flutter.
+- Gunakan Firebase Authentication SDK Android resmi melalui platform channel agar UI Flutter tetap dapat diuji tanpa konfigurasi Firebase nyata.
 - Tambahkan Google Services plugin pada konfigurasi Gradle Android sesuai dokumentasi Firebase Flutter terbaru.
 - `google-services.json` harus ditempatkan di `android/app/google-services.json` oleh pengguna setelah project Firebase dibuat.
 - File konfigurasi tidak dibuat-buat, tidak berisi kredensial palsu, dan tidak digantikan placeholder yang dapat dianggap valid.

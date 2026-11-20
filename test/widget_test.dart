@@ -4,6 +4,8 @@ import 'package:witdget/main.dart';
 import 'package:witdget/models/sensor_snapshot.dart';
 import 'package:witdget/services/esp32_service.dart';
 import 'package:witdget/services/daily_energy_store.dart';
+import 'package:witdget/services/auth_service.dart';
+import 'package:witdget/services/host_store.dart';
 import 'package:witdget/theme/space_theme.dart';
 
 class FakeEsp32Service extends Esp32Service {
@@ -44,9 +46,11 @@ void main() {
       NekouseApp(
         service: FakeEsp32Service(),
         energyStore: MemoryDailyEnergyStore(),
+        authService: MemoryAuthService(signedIn: true),
+        hostStore: MemoryHostStore('192.168.1.10'),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Perangkat'), findsOneWidget);
     expect(find.textContaining('Willy'), findsOneWidget);

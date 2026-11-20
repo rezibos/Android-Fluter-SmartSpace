@@ -22,11 +22,17 @@ class HomeShell extends StatefulWidget {
     required this.energyStore,
     required this.themeMode,
     required this.onThemeChanged,
+    required this.onLogout,
+    required this.onHostChanged,
+    this.disposeService = true,
   });
   final Esp32Service service;
   final DailyEnergyStore energyStore;
+  final bool disposeService;
   final SpaceThemeMode themeMode;
   final ValueChanged<SpaceThemeMode> onThemeChanged;
+  final Future<void> Function() onLogout;
+  final Future<void> Function(String host) onHostChanged;
 
   @override
   State<HomeShell> createState() => _HomeShellState();
@@ -89,7 +95,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
-    widget.service.dispose();
+    if (widget.disposeService) widget.service.dispose();
     super.dispose();
   }
 
@@ -307,6 +313,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Hub berhasil terhubung.')));
+      await widget.onHostChanged(result);
       await _poll();
     } catch (_) {
       widget.service.updateHost(previous);
@@ -351,7 +358,9 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
         ),
         onProfileTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          MaterialPageRoute(
+            builder: (_) => ProfileScreen(onLogout: widget.onLogout),
+          ),
         ),
         onRetry: _poll,
         onViewSensors: () => setState(() => _tab = 1),
@@ -386,8 +395,11 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
         onEditHost: _editHost,
         onProfileTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          MaterialPageRoute(
+            builder: (_) => ProfileScreen(onLogout: widget.onLogout),
+          ),
         ),
+        onLogout: widget.onLogout,
       ),
     ];
     return Scaffold(

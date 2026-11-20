@@ -18,6 +18,7 @@ class SettingsScreen extends StatelessWidget {
     required this.onThemeChanged,
     required this.onEditHost,
     required this.onProfileTap,
+    required this.onLogout,
   });
 
   final bool connected;
@@ -32,6 +33,7 @@ class SettingsScreen extends StatelessWidget {
   final ValueChanged<SpaceThemeMode> onThemeChanged;
   final VoidCallback onEditHost;
   final VoidCallback onProfileTap;
+  final Future<void> Function() onLogout;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -232,8 +234,39 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
+      const SizedBox(height: 24),
+      OutlinedButton.icon(
+        onPressed: () => _confirmLogout(context),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: SpacePalette.danger,
+          minimumSize: const Size.fromHeight(52),
+        ),
+        icon: const Icon(Icons.logout_rounded),
+        label: const Text('Keluar'),
+      ),
     ],
   );
+
+  Future<void> _confirmLogout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Keluar dari akun?'),
+        content: const Text('Kamu perlu login kembali untuk mengontrol rumah.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Keluar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) await onLogout();
+  }
 
   Widget _card(BuildContext context, {required Widget child}) => Container(
     padding: const EdgeInsets.all(18),

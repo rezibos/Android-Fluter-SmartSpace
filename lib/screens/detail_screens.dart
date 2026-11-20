@@ -286,7 +286,8 @@ class _Notice extends StatelessWidget {
 }
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, required this.onLogout});
+  final Future<void> Function() onLogout;
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -338,6 +339,37 @@ class ProfileScreen extends StatelessWidget {
             ),
             child: const Text('Simpan Perubahan'),
           ),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () async {
+            final confirmed = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Keluar dari akun?'),
+                content: const Text(
+                  'Kamu perlu login kembali untuk mengontrol rumah.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Batal'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Keluar'),
+                  ),
+                ],
+              ),
+            );
+            if (confirmed == true) await onLogout();
+          },
+          style: OutlinedButton.styleFrom(
+            foregroundColor: SpacePalette.danger,
+            minimumSize: const Size.fromHeight(52),
+          ),
+          icon: const Icon(Icons.logout_rounded),
+          label: const Text('Keluar'),
         ),
       ],
     ),
