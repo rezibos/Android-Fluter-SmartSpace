@@ -43,7 +43,7 @@ class _HomeShellState extends State<HomeShell> {
   late List<RoomLight> _rooms = const [
     RoomLight(
       id: 'tengah',
-      name: 'Ruang Tengah',
+      name: 'Tengah',
       icon: Icons.weekend_outlined,
       isOn: false,
       brightness: 70,
@@ -64,7 +64,7 @@ class _HomeShellState extends State<HomeShell> {
     ),
     RoomLight(
       id: 'depan',
-      name: 'Lampu Depan',
+      name: 'Depan',
       icon: Icons.wb_twilight_outlined,
       isOn: false,
       brightness: 100,
@@ -281,7 +281,6 @@ class _HomeShellState extends State<HomeShell> {
         ),
         onRetry: _poll,
         onViewSensors: () => setState(() => _tab = 1),
-        onViewElectricity: () => setState(() => _tab = 3),
       ),
       SensorScreen(
         snapshot: _snapshot,

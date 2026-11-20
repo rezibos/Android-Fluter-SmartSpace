@@ -23,7 +23,6 @@ class ControlScreen extends StatelessWidget {
     required this.onProfileTap,
     required this.onRetry,
     required this.onViewSensors,
-    required this.onViewElectricity,
   });
 
   final List<RoomLight> rooms;
@@ -41,7 +40,6 @@ class ControlScreen extends StatelessWidget {
   final VoidCallback onProfileTap;
   final VoidCallback onRetry;
   final VoidCallback onViewSensors;
-  final VoidCallback onViewElectricity;
 
   String get _greeting {
     final hour = DateTime.now().hour;
@@ -50,14 +48,6 @@ class ControlScreen extends StatelessWidget {
     if (hour < 19) return 'Selamat sore';
     return 'Selamat malam';
   }
-
-  double get _estimatedWatt =>
-      rooms.fold<double>(
-        0,
-        (total, room) => total + (room.isOn ? 18 * room.brightness / 100 : 0),
-      ) +
-      (relayOn ? 65 : 0) +
-      8;
 
   @override
   Widget build(BuildContext context) => CustomScrollView(
@@ -236,7 +226,7 @@ class ControlScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Kondisi Ruangan',
+                      'Kondisi Rumah',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
@@ -244,7 +234,7 @@ class ControlScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      'Ruang Tengah',
+                      'Smart Space',
                       style: TextStyle(
                         color: context.space.inkMuted,
                         fontSize: 12,
@@ -373,7 +363,6 @@ class ControlScreen extends StatelessWidget {
   );
 
   Widget _devicesPanel(BuildContext context) {
-    final activeCount = rooms.where((room) => room.isOn).length;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -391,9 +380,24 @@ class ControlScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
                 ),
                 const Spacer(),
-                Text(
-                  '$activeCount dari ${rooms.length} lampu aktif',
-                  style: TextStyle(color: context.space.inkMuted, fontSize: 11),
+                PopupMenuButton<bool>(
+                  tooltip: 'Opsi perangkat',
+                  enabled: connected,
+                  onSelected: onAllLights,
+                  icon: Icon(
+                    Icons.more_horiz_rounded,
+                    color: context.space.inkMuted,
+                  ),
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(
+                      value: true,
+                      child: Text('Nyalakan semua lampu'),
+                    ),
+                    PopupMenuItem(
+                      value: false,
+                      child: Text('Matikan semua lampu'),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -401,176 +405,57 @@ class ControlScreen extends StatelessWidget {
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: rooms.length,
+            itemCount: rooms.length + 1,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
-              childAspectRatio: .98,
+              childAspectRatio: .82,
             ),
             itemBuilder: (context, index) {
+              if (index == rooms.length) {
+                return _PanelPumpCard(
+                  isOn: relayOn,
+                  enabled: connected,
+                  onTap: onPumpTap,
+                  onToggle: onRelayToggle,
+                );
+              }
               final room = rooms[index];
               return _PanelDeviceCard(
                 room: room,
+                assetPath: _assetForRoom(room.id),
                 enabled: connected,
                 onTap: () => onLightTap(room),
                 onToggle: (value) => onLightToggle(room, value),
               );
             },
           ),
-          const SizedBox(height: 10),
-          InkWell(
-            onTap: onPumpTap,
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: context.space.surface,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: context.space.muted,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Icon(
-                      Icons.water_drop_outlined,
-                      color: relayOn
-                          ? context.space.accent
-                          : context.space.active,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Pompa Air',
-                          style: TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        Text(
-                          relayOn
-                              ? 'Aktif • Tandon Utama'
-                              : 'Nonaktif • Tandon Utama',
-                          style: TextStyle(
-                            color: context.space.inkMuted,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SpaceToggle(
-                    value: relayOn,
-                    onChanged: connected ? onRelayToggle : null,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: context.space.surface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                _massAction(
-                  context,
-                  icon: Icons.add_rounded,
-                  label: 'Semua Nyala',
-                  onTap: connected ? () => onAllLights(true) : null,
-                  filled: true,
-                ),
-                const SizedBox(width: 8),
-                _massAction(
-                  context,
-                  icon: Icons.power_settings_new_rounded,
-                  label: 'Semua Mati',
-                  onTap: connected ? () => onAllLights(false) : null,
-                ),
-                const Spacer(),
-                InkWell(
-                  onTap: onViewElectricity,
-                  borderRadius: BorderRadius.circular(14),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${_estimatedWatt.toStringAsFixed(0)} W',
-                              style: TextStyle(
-                                color: context.space.active,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            Text(
-                              'Estimasi',
-                              style: TextStyle(
-                                color: context.space.inkMuted,
-                                fontSize: 9,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.chevron_right_rounded,
-                          color: context.space.active,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _massAction(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback? onTap,
-    bool filled = false,
-  }) => Tooltip(
-    message: label,
-    child: IconButton(
-      onPressed: onTap,
-      style: IconButton.styleFrom(
-        backgroundColor: filled ? context.space.active : context.space.muted,
-        foregroundColor: filled ? context.space.onActive : context.space.active,
-      ),
-      icon: Icon(icon),
-    ),
-  );
+  String _assetForRoom(String id) => switch (id) {
+    'tengah' => 'assets/devices/lamp_tengah.png',
+    'kamar' => 'assets/devices/lamp_kamar.png',
+    'dapur' => 'assets/devices/lamp_dapur.png',
+    'depan' => 'assets/devices/lamp_depan.png',
+    _ => 'assets/devices/lamp_tengah.png',
+  };
 }
 
 class _PanelDeviceCard extends StatelessWidget {
   const _PanelDeviceCard({
     required this.room,
+    required this.assetPath,
     required this.enabled,
     required this.onTap,
     required this.onToggle,
   });
 
   final RoomLight room;
+  final String assetPath;
   final bool enabled;
   final VoidCallback onTap;
   final ValueChanged<bool> onToggle;
@@ -583,7 +468,7 @@ class _PanelDeviceCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
           color: context.space.surface,
           borderRadius: BorderRadius.circular(22),
@@ -591,54 +476,34 @@ class _PanelDeviceCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        room.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        room.isOn ? 'Aktif' : 'Mati',
-                        style: TextStyle(
-                          color: context.space.inkMuted,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
+            Text(
+              room.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            ),
+            Text(
+              room.isOn ? 'Menyala' : 'Mati',
+              style: TextStyle(color: context.space.inkMuted, fontSize: 11),
+            ),
+            Expanded(
+              child: Center(
+                child: Opacity(
+                  opacity: room.isOn ? 1 : .72,
+                  child: Image.asset(
+                    assetPath,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                    semanticLabel: 'Gambar lampu ${room.name}',
                   ),
                 ),
+              ),
+            ),
+            Row(
+              children: [
                 SpaceToggle(
                   value: room.isOn,
                   onChanged: enabled ? onToggle : null,
-                ),
-              ],
-            ),
-            const Spacer(),
-            Center(
-              child: Icon(
-                room.icon,
-                size: 50,
-                color: room.isOn
-                    ? context.space.active
-                    : context.space.inkMuted.withValues(alpha: .55),
-              ),
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Icon(
-                  Icons.light_mode_outlined,
-                  size: 15,
-                  color: context.space.accent,
                 ),
                 const Spacer(),
                 Text(
@@ -647,6 +512,64 @@ class _PanelDeviceCard extends StatelessWidget {
                 ),
               ],
             ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _PanelPumpCard extends StatelessWidget {
+  const _PanelPumpCard({
+    required this.isOn,
+    required this.enabled,
+    required this.onTap,
+    required this.onToggle,
+  });
+
+  final bool isOn;
+  final bool enabled;
+  final VoidCallback onTap;
+  final ValueChanged<bool> onToggle;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: 'Pompa air, ${isOn ? 'aktif' : 'nonaktif'}',
+    button: true,
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          color: context.space.surface,
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Pompa',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+            ),
+            Text(
+              isOn ? 'Aktif' : 'Nonaktif',
+              style: TextStyle(color: context.space.inkMuted, fontSize: 11),
+            ),
+            Expanded(
+              child: Center(
+                child: Opacity(
+                  opacity: isOn ? 1 : .72,
+                  child: Image.asset(
+                    'assets/devices/pompa.png',
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                    semanticLabel: 'Gambar pompa air',
+                  ),
+                ),
+              ),
+            ),
+            SpaceToggle(value: isOn, onChanged: enabled ? onToggle : null),
           ],
         ),
       ),
