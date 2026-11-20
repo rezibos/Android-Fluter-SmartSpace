@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../models/energy_usage.dart';
 import '../models/room_light.dart';
 import '../models/sensor_snapshot.dart';
+import '../services/daily_energy_store.dart';
 import '../services/esp32_service.dart';
 import '../theme/space_theme.dart';
 import 'control_screen.dart';
@@ -17,10 +19,12 @@ class HomeShell extends StatefulWidget {
   const HomeShell({
     super.key,
     required this.service,
+    required this.energyStore,
     required this.themeMode,
     required this.onThemeChanged,
   });
   final Esp32Service service;
+  final DailyEnergyStore energyStore;
   final SpaceThemeMode themeMode;
   final ValueChanged<SpaceThemeMode> onThemeChanged;
 
@@ -28,7 +32,7 @@ class HomeShell extends StatefulWidget {
   State<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   int _tab = 0;
   int _gasThreshold = 400;
   bool _connected = false;
@@ -37,6 +41,8 @@ class _HomeShellState extends State<HomeShell> {
   bool _notificationsEnabled = true;
   bool _pollInFlight = false;
   DateTime? _lastUpdated;
+  DateTime? _energyUpdatedAt;
+  double _dailyKwh = 0;
   SensorSnapshot? _snapshot;
   Timer? _timer;
   final List<double> _gasHistory = [];
@@ -74,20 +80,79 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    _poll();
+    WidgetsBinding.instance.addObserver(this);
+    _initialize();
     _timer = Timer.periodic(const Duration(seconds: 2), (_) => _poll());
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
     widget.service.dispose();
     super.dispose();
   }
 
+  Future<void> _initialize() async {
+    final now = DateTime.now();
+    try {
+      final record = await widget.energyStore.load(now);
+      if (mounted) setState(() => _dailyKwh = record.kwh);
+    } catch (_) {
+      // Penyimpanan tidak boleh menghambat kontrol perangkat.
+    }
+    _energyUpdatedAt = DateTime.now();
+    await _poll();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final now = DateTime.now();
+    if (state == AppLifecycleState.resumed) {
+      _energyUpdatedAt = now;
+      return;
+    }
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _accrueEnergy(now);
+      _energyUpdatedAt = null;
+    }
+  }
+
+  bool _isSameDate(DateTime first, DateTime second) =>
+      first.year == second.year &&
+      first.month == second.month &&
+      first.day == second.day;
+
+  void _accrueEnergy(DateTime now) {
+    final previous = _energyUpdatedAt;
+    _energyUpdatedAt = now;
+    if (previous == null) return;
+
+    final nextKwh = _isSameDate(previous, now)
+        ? EnergyUsage.accumulate(
+            kwh: _dailyKwh,
+            watts: EnergyUsage.calculate(
+              rooms: _rooms,
+              relayOn: _relayOn,
+              dailyKwh: _dailyKwh,
+            ).currentWatts,
+            elapsed: now.difference(previous),
+          )
+        : 0.0;
+    if (mounted) setState(() => _dailyKwh = nextKwh);
+    unawaited(
+      widget.energyStore
+          .save(date: now, kwh: nextKwh)
+          .catchError((Object _) {}),
+    );
+  }
+
   Future<void> _poll() async {
     if (_pollInFlight) return;
     _pollInFlight = true;
+    _accrueEnergy(DateTime.now());
     try {
       final data = await widget.service.fetchSensor();
       if (!mounted) return;
@@ -113,6 +178,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _toggleLight(RoomLight room, bool value) async {
+    _accrueEnergy(DateTime.now());
     final index = _rooms.indexWhere((item) => item.id == room.id);
     final previous = _rooms[index];
     setState(() => _rooms[index] = previous.copyWith(isOn: value));
@@ -130,6 +196,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _setAllLights(bool value) async {
+    _accrueEnergy(DateTime.now());
     final previous = List<RoomLight>.from(_rooms);
     setState(
       () => _rooms = _rooms.map((room) => room.copyWith(isOn: value)).toList(),
@@ -144,6 +211,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _toggleRelay(bool value) async {
+    _accrueEnergy(DateTime.now());
     final previous = _relayOn;
     setState(() => _relayOn = value);
     try {
@@ -156,6 +224,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   Future<void> _setBrightness(RoomLight room, double value) async {
+    _accrueEnergy(DateTime.now());
     final index = _rooms.indexWhere((item) => item.id == room.id);
     final previous = _rooms[index];
     setState(() => _rooms[index] = previous.copyWith(brightness: value));
@@ -257,6 +326,11 @@ class _HomeShellState extends State<HomeShell> {
     final screens = [
       ControlScreen(
         rooms: _rooms,
+        energyUsage: EnergyUsage.calculate(
+          rooms: _rooms,
+          relayOn: _relayOn,
+          dailyKwh: _dailyKwh,
+        ),
         snapshot: _snapshot,
         connected: _connected,
         lastUpdated: _lastUpdated,

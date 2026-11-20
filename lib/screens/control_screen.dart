@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/energy_usage.dart';
 import '../models/room_light.dart';
 import '../models/sensor_snapshot.dart';
 import '../theme/space_theme.dart';
@@ -9,6 +10,7 @@ class ControlScreen extends StatelessWidget {
   const ControlScreen({
     super.key,
     required this.rooms,
+    required this.energyUsage,
     required this.snapshot,
     required this.connected,
     required this.lastUpdated,
@@ -26,6 +28,7 @@ class ControlScreen extends StatelessWidget {
   });
 
   final List<RoomLight> rooms;
+  final EnergyUsage energyUsage;
   final SensorSnapshot? snapshot;
   final bool connected;
   final DateTime? lastUpdated;
@@ -65,6 +68,8 @@ class ControlScreen extends StatelessWidget {
               const SizedBox(height: 18),
               _conditionPanel(context),
               const SizedBox(height: 18),
+              _electricityPanel(context),
+              const SizedBox(height: 18),
               _devicesPanel(context),
             ],
           ),
@@ -75,58 +80,109 @@ class ControlScreen extends StatelessWidget {
 
   Widget _header(BuildContext context) => Row(
     children: [
+      Container(
+        width: 52,
+        height: 52,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: context.space.active,
+          shape: BoxShape.circle,
+        ),
+        child: Text(
+          'W',
+          style: TextStyle(
+            color: context.space.onActive,
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+      ),
+      const SizedBox(width: 12),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '$_greeting, Willy',
-              style: TextStyle(color: context.space.inkMuted, fontSize: 13),
+              _greeting,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: context.space.inkMuted, fontSize: 12),
             ),
-            const SizedBox(height: 3),
             const Text(
-              'Rumah Smart Space',
+              'Willy',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 25,
+                fontSize: 21,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -.5,
+                letterSpacing: -.3,
               ),
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: connected
+                        ? SpacePalette.safe
+                        : context.space.active.withValues(alpha: .45),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Flexible(
+                  child: Text(
+                    connected ? 'Rumah terhubung' : 'Hub terputus',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: context.space.inkMuted,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
-      Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: context.space.surface,
-          borderRadius: BorderRadius.circular(99),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x102B1820),
-              blurRadius: 18,
-              offset: Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            IconButton(
-              tooltip: 'Notifikasi',
-              onPressed: onNotificationsTap,
-              icon: Icon(
-                Icons.notifications_none_rounded,
-                color: context.space.active,
-              ),
-            ),
-            IconButton(
-              tooltip: 'Profil',
-              onPressed: onProfileTap,
-              icon: Icon(Icons.person_outline, color: context.space.active),
-            ),
-          ],
-        ),
+      const SizedBox(width: 8),
+      _headerAction(
+        context,
+        icon: Icons.notifications_none_rounded,
+        tooltip: 'Notifikasi',
+        onTap: onNotificationsTap,
+      ),
+      const SizedBox(width: 8),
+      _headerAction(
+        context,
+        icon: Icons.person_outline_rounded,
+        tooltip: 'Profil',
+        onTap: onProfileTap,
       ),
     ],
+  );
+
+  Widget _headerAction(
+    BuildContext context, {
+    required IconData icon,
+    required String tooltip,
+    required VoidCallback onTap,
+  }) => SizedBox(
+    width: 48,
+    height: 48,
+    child: IconButton(
+      tooltip: tooltip,
+      onPressed: onTap,
+      style: IconButton.styleFrom(
+        backgroundColor: context.space.surface,
+        foregroundColor: context.space.active,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      icon: Icon(icon),
+    ),
   );
 
   Widget _roomFilter(BuildContext context) => SizedBox(
@@ -327,6 +383,180 @@ class ControlScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _electricityPanel(BuildContext context) => Semantics(
+    label:
+        'Penggunaan listrik saat ini ${energyUsage.currentKilowatts.toStringAsFixed(3)} kilowatt',
+    child: Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.space.muted,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Penggunaan Listrik',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 3),
+                    Text(
+                      'Pemakaian rumah hari ini',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: context.space.surface,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.bolt_rounded,
+                      size: 15,
+                      color: context.space.accent,
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'Estimasi',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Icon(
+                Icons.electric_bolt_rounded,
+                color: context.space.active,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                energyUsage.currentKilowatts.toStringAsFixed(3),
+                style: const TextStyle(
+                  fontSize: 52,
+                  height: .95,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -2,
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 5, bottom: 5),
+                child: Text(
+                  'kW',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: _energyMetric(
+                  context,
+                  value: energyUsage.dailyKwh.toStringAsFixed(3),
+                  label: 'kWh hari ini',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _energyMetric(
+                  context,
+                  value: '${energyUsage.activeDeviceCount}',
+                  label: 'Perangkat aktif',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _energyMetric(
+                  context,
+                  value: _formatRupiah(energyUsage.estimatedCost),
+                  label: 'Estimasi biaya',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+
+  Widget _energyMetric(
+    BuildContext context, {
+    required String value,
+    required String label,
+  }) => Container(
+    constraints: const BoxConstraints(minHeight: 74),
+    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 11),
+    decoration: BoxDecoration(
+      color: context.space.surface,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            value,
+            maxLines: 1,
+            style: TextStyle(
+              color: context.space.active,
+              fontSize: 15,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: context.space.inkMuted,
+            fontSize: 10,
+            height: 1.15,
+          ),
+        ),
+      ],
+    ),
+  );
+
+  String _formatRupiah(double value) {
+    final digits = value.round().toString();
+    final grouped = digits.replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+      (match) => '${match[1]}.',
+    );
+    return 'Rp $grouped';
   }
 
   Widget _sensorAction(

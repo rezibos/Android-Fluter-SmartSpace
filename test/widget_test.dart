@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:witdget/main.dart';
 import 'package:witdget/models/sensor_snapshot.dart';
 import 'package:witdget/services/esp32_service.dart';
+import 'package:witdget/services/daily_energy_store.dart';
 import 'package:witdget/theme/space_theme.dart';
 
 class FakeEsp32Service extends Esp32Service {
@@ -39,10 +40,19 @@ void main() {
   testWidgets('bottom navigation switches between the three main screens', (
     tester,
   ) async {
-    await tester.pumpWidget(NekouseApp(service: FakeEsp32Service()));
+    await tester.pumpWidget(
+      NekouseApp(
+        service: FakeEsp32Service(),
+        energyStore: MemoryDailyEnergyStore(),
+      ),
+    );
     await tester.pump();
 
     expect(find.text('Perangkat'), findsOneWidget);
+    expect(find.text('Willy'), findsOneWidget);
+    expect(find.text('Penggunaan Listrik'), findsOneWidget);
+    expect(find.text('kWh hari ini'), findsOneWidget);
+    expect(find.text('Estimasi biaya'), findsOneWidget);
     await tester.tap(find.text('Grafik'));
     await tester.pumpAndSettle();
     expect(find.text('Grafik Sensor'), findsOneWidget);
