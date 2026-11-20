@@ -503,7 +503,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
           ),
           child: Icon(
             Icons.pets_rounded,
-            color: selected ? context.space.accent : context.space.onActive,
+            color: context.space.onActive,
             size: 25,
           ),
         ),
