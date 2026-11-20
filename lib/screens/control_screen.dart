@@ -403,6 +403,8 @@ class ControlScreen extends StatelessWidget {
             ),
           ),
           GridView.builder(
+            primary: false,
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: rooms.length + 1,
