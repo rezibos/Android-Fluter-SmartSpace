@@ -64,11 +64,11 @@ class ControlScreen extends StatelessWidget {
             children: [
               _header(context),
               const SizedBox(height: 24),
-              _roomFilter(context),
-              const SizedBox(height: 18),
               _conditionPanel(context),
               const SizedBox(height: 18),
               _electricityPanel(context),
+              const SizedBox(height: 18),
+              _roomFilter(context),
               const SizedBox(height: 18),
               _devicesPanel(context),
             ],
@@ -362,34 +362,6 @@ class ControlScreen extends StatelessWidget {
                     Text(
                       'Pemakaian rumah hari ini',
                       style: TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: context.space.surface,
-                  borderRadius: BorderRadius.circular(99),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.bolt_rounded,
-                      size: 15,
-                      color: context.space.accent,
-                    ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      'Estimasi',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
                     ),
                   ],
                 ),
