@@ -49,7 +49,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('Perangkat'), findsOneWidget);
-    expect(find.text('Willy'), findsOneWidget);
+    expect(find.textContaining('Willy'), findsOneWidget);
+    expect(find.text('Rumah Smart Space'), findsOneWidget);
     expect(find.text('Penggunaan Listrik'), findsOneWidget);
     expect(find.text('kWh hari ini'), findsOneWidget);
     expect(find.text('Estimasi biaya'), findsOneWidget);

@@ -80,109 +80,58 @@ class ControlScreen extends StatelessWidget {
 
   Widget _header(BuildContext context) => Row(
     children: [
-      Container(
-        width: 52,
-        height: 52,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: context.space.active,
-          shape: BoxShape.circle,
-        ),
-        child: Text(
-          'W',
-          style: TextStyle(
-            color: context.space.onActive,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-      const SizedBox(width: 12),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              _greeting,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: context.space.inkMuted, fontSize: 12),
+              '$_greeting, Willy',
+              style: TextStyle(color: context.space.inkMuted, fontSize: 13),
             ),
+            const SizedBox(height: 3),
             const Text(
-              'Willy',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              'Rumah Smart Space',
               style: TextStyle(
-                fontSize: 21,
+                fontSize: 25,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -.3,
+                letterSpacing: -.5,
               ),
-            ),
-            Row(
-              children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: BoxDecoration(
-                    color: connected
-                        ? SpacePalette.safe
-                        : context.space.active.withValues(alpha: .45),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Flexible(
-                  child: Text(
-                    connected ? 'Rumah terhubung' : 'Hub terputus',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: context.space.inkMuted,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
       ),
-      const SizedBox(width: 8),
-      _headerAction(
-        context,
-        icon: Icons.notifications_none_rounded,
-        tooltip: 'Notifikasi',
-        onTap: onNotificationsTap,
-      ),
-      const SizedBox(width: 8),
-      _headerAction(
-        context,
-        icon: Icons.person_outline_rounded,
-        tooltip: 'Profil',
-        onTap: onProfileTap,
+      Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: context.space.surface,
+          borderRadius: BorderRadius.circular(99),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x102B1820),
+              blurRadius: 18,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            IconButton(
+              tooltip: 'Notifikasi',
+              onPressed: onNotificationsTap,
+              icon: Icon(
+                Icons.notifications_none_rounded,
+                color: context.space.active,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Profil',
+              onPressed: onProfileTap,
+              icon: Icon(Icons.person_outline, color: context.space.active),
+            ),
+          ],
+        ),
       ),
     ],
-  );
-
-  Widget _headerAction(
-    BuildContext context, {
-    required IconData icon,
-    required String tooltip,
-    required VoidCallback onTap,
-  }) => SizedBox(
-    width: 48,
-    height: 48,
-    child: IconButton(
-      tooltip: tooltip,
-      onPressed: onTap,
-      style: IconButton.styleFrom(
-        backgroundColor: context.space.surface,
-        foregroundColor: context.space.active,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      icon: Icon(icon),
-    ),
   );
 
   Widget _roomFilter(BuildContext context) => SizedBox(
